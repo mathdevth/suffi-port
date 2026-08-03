@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suffi-Port: พอ-ดี-พอร์ต (Smart Finance)</title>
+    <title>Suffi-Port: พอ-ดี-พอร์ต (AI Finance)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -11,24 +11,25 @@
     <style> 
         body { font-family: 'Prompt', sans-serif; background-color: #f3f4f6; } 
         .animate-fade-in { animation: fadeIn 0.4s ease-in-out; }
+        .gradient-ai { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <!-- 1. หน้า Auth (Login/Register) -->
+    <!-- หน้า Auth -->
     <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner"><span class="text-4xl">🌱</span></div>
             <h2 class="text-3xl font-bold mb-1 text-green-700">พอ-ดี-พอร์ต</h2>
-            <p class="text-gray-500 mb-6 text-sm">สร้างภูมิคุ้มกันทางการเงิน</p>
+            <p class="text-gray-500 mb-6 text-sm">แอปพลิเคชันวิเคราะห์การเงินด้วย AI</p>
             <input type="text" id="authName" placeholder="ชื่อผู้ใช้งาน" class="w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-green-500 outline-none text-center font-semibold text-lg">
             <input type="password" id="authPin" maxlength="4" placeholder="รหัส PIN 4 หลัก" class="text-center text-2xl w-full p-4 border border-gray-200 rounded-xl mb-6 focus:ring-2 focus:ring-green-500 outline-none">
             <button onclick="handleAuth()" class="w-full bg-green-600 text-white font-bold p-4 rounded-xl hover:bg-green-700 transition shadow-lg text-lg">เข้าสู่ระบบ / ลงทะเบียน</button>
         </div>
     </div>
 
-    <!-- 2. หน้าแอปหลัก -->
+    <!-- หน้าแอปหลัก -->
     <div id="mainApp" class="hidden max-w-md mx-auto bg-white min-h-screen shadow-lg pb-24 relative overflow-x-hidden">
         
         <!-- Header -->
@@ -40,12 +41,42 @@
             <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-sm font-semibold transition">ออกระบบ</button>
         </div>
 
-        <!-- แท็บ 1: Dashboard -->
+        <!-- แท็บ 1: Dashboard (พร้อมระบบ AI Insights) -->
         <div id="tab-dashboard" class="p-5 animate-fade-in">
+            
+            <!-- 🤖 กล่อง AI วิเคราะห์ด้วยสมการคณิตศาสตร์ -->
+            <div class="gradient-ai rounded-2xl shadow-lg p-5 mb-5 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-8xl">🤖</div>
+                <h2 class="font-bold text-sm mb-3 flex items-center"><span class="text-xl mr-2">✨</span> AI Smart Insights</h2>
+                
+                <div class="space-y-3 relative z-10">
+                    <!-- SHI Index -->
+                    <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                        <p class="text-xs text-blue-100 mb-1">ดัชนีสุขภาพการเงิน (SHI)</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-2xl font-bold" id="aiShiScore">0<span class="text-sm font-normal">/100</span></h3>
+                            <span class="text-xs font-semibold px-2 py-1 bg-white/30 rounded" id="aiShiLevel">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <!-- Burn Rate -->
+                        <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                            <p class="text-xs text-blue-100 mb-1">พยากรณ์เงินหมด</p>
+                            <h3 class="text-sm font-bold" id="aiBurnRate">กำลังคำนวณ...</h3>
+                        </div>
+                        <!-- Intersection -->
+                        <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                            <p class="text-xs text-blue-100 mb-1">พยากรณ์จุดตัดวิกฤต</p>
+                            <h3 class="text-sm font-bold text-orange-200" id="aiIntersect">กำลังคำนวณ...</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- กราฟเส้น (Trend) -->
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 mb-5 border border-gray-100">
                 <h2 class="font-bold text-gray-700 text-center mb-1 text-sm">แนวโน้มการเงินสะสม (รายวัน)</h2>
-                <p id="trendAlert" class="text-center text-xs mb-2 font-semibold text-gray-400">สถานะ: รอวิเคราะห์ข้อมูล</p>
                 <div class="relative h-48 w-full"><canvas id="trendChart"></canvas></div>
             </div>
 
@@ -53,9 +84,9 @@
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 mb-5 border border-gray-100 flex items-center">
                 <div class="w-1/2 relative h-32"><canvas id="expenseChart"></canvas></div>
                 <div class="w-1/2 pl-4 text-xs space-y-2">
-                    <div class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>จำเป็น (50%)</div>
-                    <div class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>ฟุ่มเฟือย (30%)</div>
-                    <div class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>เงินออม (20%)</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>จำเป็น (Needs)</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>ฟุ่มเฟือย (Wants)</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>เงินออม (Savings)</div>
                 </div>
             </div>
 
@@ -69,7 +100,7 @@
             <div id="historyData" class="text-sm bg-gray-50 p-3 rounded-2xl border border-gray-100 h-64 overflow-y-auto"></div>
         </div>
 
-        <!-- แท็บ 2: บันทึกรายการ (UI 3 ปุ่มแบบใหม่) -->
+        <!-- แท็บ 2: บันทึกรายการ -->
         <div id="tab-record" class="hidden p-5 animate-fade-in">
             <div class="flex mb-6 bg-gray-100 p-1.5 rounded-xl shadow-inner">
                 <button id="btnIncome" onclick="setTxType('income')" class="w-1/3 text-gray-500 py-2.5 rounded-lg font-bold transition-all text-sm">รายรับ</button>
@@ -79,13 +110,10 @@
             
             <form id="recordForm" class="space-y-4 bg-white p-5 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100">
                 <input type="hidden" id="txType" value="income">
-                
-                <!-- ช่องเลือกวันที่แบบใหม่ -->
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">วันที่ทำรายการ</label>
                     <input type="date" id="txDate" required class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-gray-50">
                 </div>
-
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">หมวดหมู่</label>
                     <select id="category" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-gray-50"></select>
@@ -151,7 +179,7 @@
 
     <!-- ================= JavaScript ================= -->
     <script>
-        // *** 1. นำ URL API อันใหม่จาก Google Apps Script มาใส่ตรงนี้ ***
+        // *** 1. นำ URL API อันใหม่มาใส่ตรงนี้ ***
         const API_URL = "https://script.google.com/macros/s/AKfycby03sXXVMH13Y0V90HE0p8PQE-1AxgkTdknvjh4jIUPiNihsR9mFbLyzx1zQfWXIRcl/exec";
         
         let expenseChartObj = null;
@@ -170,7 +198,7 @@
             }
         };
 
-        // --- ระบบ Auth ย่อ ---
+        // --- ระบบ Auth ---
         function handleAuth() {
             const name = document.getElementById('authName').value.trim();
             const pin = document.getElementById('authPin').value;
@@ -185,10 +213,9 @@
                 users.push({ name: name, pin: pin });
                 localStorage.setItem('suffiUsers', JSON.stringify(users));
                 loginSuccess(name);
-                Swal.fire('ยินดีต้อนรับ', 'ระบบสร้างบัญชีใหม่ให้คุณแล้ว', 'success');
+                Swal.fire('ยินดีต้อนรับ', 'สร้างบัญชีเรียบร้อย', 'success');
             }
         }
-
         function loginSuccess(name) {
             currentUser = name; localStorage.setItem('activeUser', currentUser); 
             document.getElementById('authName').value = ""; document.getElementById('authPin').value = "";
@@ -196,7 +223,6 @@
             document.getElementById('authScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
             setTxType('income'); loadDashboardData(); renderWishlist();
         }
-
         function logout() { localStorage.removeItem('activeUser'); location.reload(); }
 
         function showTab(tabName) {
@@ -208,19 +234,14 @@
             document.getElementById('nav-' + tabName).classList.replace('text-gray-400', 'text-green-600');
         }
 
-        // --- ระบบเลือก แท็บประเภทรายการ (3 ปุ่ม) ---
+        // --- ตั้งค่าฟอร์ม ---
         function setTxType(type) {
             document.getElementById('txType').value = type;
             const catSelect = document.getElementById('category');
-            
-            // เซ็ตวันที่เป็นปัจจุบันให้เสมอ
             document.getElementById('txDate').valueAsDate = new Date();
-
-            // ล้างสไตล์ปุ่มทั้งหมดก่อน
             ['btnIncome', 'btnExpense', 'btnSavings'].forEach(id => {
                 document.getElementById(id).className = "w-1/3 text-gray-500 py-2.5 rounded-lg font-bold transition-all text-sm hover:bg-gray-200";
             });
-
             if(type === 'income') {
                 document.getElementById('btnIncome').className = "w-1/3 bg-white text-green-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
                 catSelect.innerHTML = `<option value="ค่าขนมประจำ">ค่าขนมรายวัน/เดือน</option><option value="รายได้พิเศษ">รายได้พิเศษ</option>`;
@@ -230,7 +251,6 @@
                     <optgroup label="✅ สิ่งจำเป็น (Needs)"><option value="Need-อาหาร">อาหารมื้อหลัก</option><option value="Need-การเรียน">อุปกรณ์การเรียน</option><option value="Need-เดินทาง">ค่าเดินทาง</option></optgroup>
                     <optgroup label="⚠️ ฟุ่มเฟือย (Wants)"><option value="Want-เกม/ของเล่น">เติมเกม / ของเล่น</option><option value="Want-ขนมจุกจิก">ขนมจุกจิก</option><option value="Want-แฟชั่น/อื่นๆ">แฟชั่น / อื่นๆ</option></optgroup>`;
             } else if (type === 'savings') {
-                // เงินออมถูกแยกออกมาอย่างชัดเจน
                 document.getElementById('btnSavings').className = "w-1/3 bg-white text-blue-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
                 catSelect.innerHTML = `<option value="Save-กระปุก">หยอดกระปุกออมสิน</option><option value="Save-ธนาคาร">ฝากธนาคาร</option><option value="Save-ลงทุน">ลงทุน (หุ้น/กองทุน)</option>`;
             }
@@ -247,8 +267,8 @@
 
             if(type === 'expense' && category.startsWith("Want")) {
                 Swal.fire({
-                    title: 'ระวังการใช้อารมณ์ตัดสินใจ!',
-                    html: `ของชิ้นนี้จัดอยู่ในหมวดฟุ่มเฟือย <b>(${amount} ฿)</b><br>คุณต้องการใส่ <b>ตะกร้าชะลอความอยาก</b> เพื่อทบทวน 7 วัน หรือซื้อเลย?`,
+                    title: 'ระวังอารมณ์ชั่ววูบ!',
+                    html: `เงิน <b>${amount} ฿</b> นี้นำไปใส่ <b>ตะกร้าชะลอความอยาก</b> เพื่อทบทวน 7 วันก่อนดีไหม?`,
                     icon: 'warning', showCancelButton: true, confirmButtonColor: '#F59E0B', cancelButtonColor: '#EF4444', 
                     confirmButtonText: '🛒 ใส่ตะกร้ารอก่อน', cancelButtonText: 'ซื้อเลย (หักเงิน)'
                 }).then((result) => {
@@ -260,17 +280,13 @@
             }
         });
 
-        // ระบบลบ-แก้ไข (มีช่องแก้ไขวันที่ด้วย)
         function deleteRecord(rowId) {
             Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#EF4444', confirmButtonText: 'ลบข้อมูล' })
             .then((result) => { if (result.isConfirmed) processApiAction({ action: 'delete', rowId: rowId }, 'กำลังลบ...'); })
         }
 
         async function editRecord(rowId, oldDate, oldAmount, oldNote) {
-            // แปลงรูปแบบวันที่ให้พร้อมแสดงในช่อง input type="date"
-            let dt = new Date(oldDate);
-            let formattedDate = dt.toISOString().split('T')[0];
-
+            let dt = new Date(oldDate); let formattedDate = dt.toISOString().split('T')[0];
             const { value: formValues } = await Swal.fire({
                 title: 'แก้ไขรายการ',
                 html: `
@@ -285,9 +301,8 @@
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'บันทึก',
                 preConfirm: () => {
                     const newAmt = document.getElementById('swal-amount').value;
-                    const newDate = document.getElementById('swal-date').value;
                     if (!newAmt || newAmt <= 0) Swal.showValidationMessage('กรุณาระบุจำนวนเงิน');
-                    return { date: newDate, amount: newAmt, note: document.getElementById('swal-note').value }
+                    return { date: document.getElementById('swal-date').value, amount: newAmt, note: document.getElementById('swal-note').value }
                 }
             });
             if (formValues) processApiAction({ action: 'edit', rowId: rowId, date: formValues.date, amount: formValues.amount, note: formValues.note }, 'กำลังอัปเดต...');
@@ -295,9 +310,8 @@
 
         function processApiAction(payload, loadingMsg) {
             Swal.fire({ title: loadingMsg, allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-            fetch(API_URL, {
-                method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
-            }).then(res => res.json()).then(result => {
+            fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+            .then(res => res.json()).then(result => {
                 Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
                 if(payload.action === 'add') document.getElementById('recordForm').reset();
                 loadDashboardData(); 
@@ -309,7 +323,7 @@
             setTimeout(loadDashboardData, 500);
         }
 
-        // --- โหลดข้อมูล ---
+        // --- โหลดข้อมูล และ คำนวณ AI ---
         function loadDashboardData() {
             const histDiv = document.getElementById('historyData');
             fetch(API_URL).then(res => res.json()).then(data => {
@@ -317,12 +331,10 @@
                 let html = '<ul class="space-y-3">';
                 let totalNeeds = 0, totalWants = 0, totalSavings = 0;
                 let totalIncome = 0, totalExpense = 0;
-                
                 let dailyStats = {};
 
                 if(myData.length === 0) histDiv.innerHTML = '<p class="text-center text-gray-400 mt-10">ยังไม่มีข้อมูล</p>';
 
-                // เรียงข้อมูลตามวันเวลาจากใหม่ไปเก่าก่อน (เพื่อความแน่นอน)
                 myData.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
 
                 for(let i = myData.length - 1; i >= 0; i--) {
@@ -333,21 +345,14 @@
                     
                     if(!dailyStats[dateKey]) dailyStats[dateKey] = { in: 0, out: 0, save: 0 };
                     
-                    if(item.type === 'income') {
-                        totalIncome += amt;
-                        dailyStats[dateKey].in += amt;
-                    } else if (item.type === 'expense') {
-                        totalExpense += amt;
-                        dailyStats[dateKey].out += amt;
+                    if(item.type === 'income') { totalIncome += amt; dailyStats[dateKey].in += amt; } 
+                    else if (item.type === 'expense') { 
+                        totalExpense += amt; dailyStats[dateKey].out += amt;
                         if(item.category.startsWith('Need')) totalNeeds += amt;
                         if(item.category.startsWith('Want')) totalWants += amt;
-                    } else if (item.type === 'savings') {
-                        // เงินออมถูกนับรวมในตัวแปรแยก
-                        totalSavings += amt;
-                        dailyStats[dateKey].save += amt;
-                    }
+                    } 
+                    else if (item.type === 'savings') { totalSavings += amt; dailyStats[dateKey].save += amt; }
 
-                    // สร้าง UI ประวัติ
                     let cText = item.category.replace(/Need-|Want-|Save-/g, '');
                     let cColor = item.type === 'income' ? 'text-green-600' : (item.type === 'savings' ? 'text-blue-500' : (item.category.startsWith('Want') ? 'text-red-500' : 'text-gray-800'));
                     let sign = item.type === 'income' ? '+' : '-';
@@ -359,8 +364,8 @@
                             <div class="${cColor} font-bold text-base text-right">${sign}${amt} ฿</div>
                         </div>
                         <div class="flex justify-end space-x-4 pt-2.5 border-t border-gray-50">
-                            <button onclick="editRecord(${item.rowId}, '${rawDate.toISOString()}', ${amt}, '${item.note}')" class="text-xs text-blue-500 hover:text-blue-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> แก้ไข</button>
-                            <button onclick="deleteRecord(${item.rowId})" class="text-xs text-red-500 hover:text-red-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> ลบ</button>
+                            <button onclick="editRecord(${item.rowId}, '${rawDate.toISOString()}', ${amt}, '${item.note}')" class="text-xs text-blue-500 hover:text-blue-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                            <button onclick="deleteRecord(${item.rowId})" class="text-xs text-red-500 hover:text-red-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                         </div>
                     </li>`;
                 }
@@ -368,15 +373,67 @@
                 if(myData.length > 0) histDiv.innerHTML = html;
                 document.getElementById('refreshIcon').classList.remove('animate-spin');
 
+                let balance = totalIncome - totalExpense - totalSavings;
+                
+                // 🚀 ส่วนการประมวลผล AI Smart Insights 🚀
+                calculateAI_Insights(dailyStats, totalIncome, totalExpense, totalSavings, totalNeeds, totalWants, balance);
+
                 updateExpensePie(totalNeeds, totalWants, totalSavings);
-                updateTrendLine(dailyStats, totalIncome, totalExpense, totalSavings);
-                updateBudgetTable(totalIncome - totalExpense - totalSavings);
+                updateTrendLine(dailyStats);
+                updateBudgetTable(balance);
 
             }).catch(e => {
                 histDiv.innerHTML = '<p class="text-center text-red-500 mt-10">เชื่อมต่อล้มเหลว</p>';
                 document.getElementById('refreshIcon').classList.remove('animate-spin');
             });
         }
+
+        // ================= 🤖 ฟังก์ชันคำนวณ AI (สมการคณิตศาสตร์) =================
+        function calculateAI_Insights(dailyStats, totalIn, totalOut, totalSave, totalNeed, totalWant, balance) {
+            let daysActive = Object.keys(dailyStats).length || 1;
+            let avgIn = totalIn / daysActive;
+            let avgOut = totalOut / daysActive;
+
+            // 1. ดัชนีสุขภาพการเงิน (SHI Model)
+            let shiScore = 0;
+            let shiLevel = "รอข้อมูล";
+            if (totalIn > 0) {
+                // คำนวณแบบถ่วงน้ำหนัก (คะแนนเริ่มต้น 50, หักลบจากความเบี่ยงเบนของสัดส่วนอุดมคติ 50/30/20)
+                let needRatio = totalNeed / totalIn;
+                let wantRatio = totalWant / totalIn;
+                let saveRatio = totalSave / totalIn;
+                
+                shiScore = 50 + (saveRatio * 100) + ((0.5 - Math.abs(needRatio - 0.5)) * 40) - (wantRatio * 100);
+                shiScore = Math.max(0, Math.min(100, shiScore)).toFixed(0);
+                
+                if(shiScore >= 80) shiLevel = "ยอดเยี่ยม 🌟";
+                else if(shiScore >= 60) shiLevel = "ดีมาก 🟢";
+                else if(shiScore >= 40) shiLevel = "พอใช้ 🟡";
+                else shiLevel = "ต้องปรับปรุง 🔴";
+            }
+            document.getElementById('aiShiScore').innerHTML = `${shiScore}<span class="text-sm font-normal">/100</span>`;
+            document.getElementById('aiShiLevel').innerText = shiLevel;
+
+            // 2. สมการพยากรณ์เงินหมด (Burn Rate) : x = c / m
+            if (balance > 0 && avgOut > 0) {
+                let daysLeft = (balance / avgOut).toFixed(1);
+                document.getElementById('aiBurnRate').innerHTML = `<span class="text-xl font-bold">${daysLeft}</span> วัน`;
+            } else if (balance <= 0) {
+                document.getElementById('aiBurnRate').innerHTML = `<span class="text-red-300">เงินหมดแล้ว!</span>`;
+            } else {
+                document.getElementById('aiBurnRate').innerHTML = `ปลอดภัย ✅`;
+            }
+
+            // 3. จุดตัดวิกฤต (System of Linear Equations)
+            if (avgOut > avgIn && balance > 0) {
+                // หาระยะเวลาที่แกนรายจ่าย (ความชันสูงกว่า) จะพุ่งชนแกนรายรับ (y1 = y2)
+                let intersectDays = (balance / (avgOut - avgIn)).toFixed(0);
+                document.getElementById('aiIntersect').innerHTML = `ติดลบใน <span class="text-red-300 text-xl font-bold">${intersectDays}</span> วัน`;
+            } else {
+                document.getElementById('aiIntersect').innerHTML = `<span class="text-green-300">ไม่มีแนวโน้มติดลบ ✅</span>`;
+            }
+        }
+        // =========================================================================
 
         function updateBudgetTable(balance) {
             document.getElementById('currentBalance').innerText = `${balance.toLocaleString()} ฿`;
@@ -385,9 +442,7 @@
                 document.getElementById('planWants').innerText = (balance * 0.3).toLocaleString() + ' ฿';
                 document.getElementById('planSavings').innerText = (balance * 0.2).toLocaleString() + ' ฿';
             } else {
-                document.getElementById('planNeeds').innerText = '0 ฿';
-                document.getElementById('planWants').innerText = '0 ฿';
-                document.getElementById('planSavings').innerText = '0 ฿';
+                ['planNeeds', 'planWants', 'planSavings'].forEach(id => document.getElementById(id).innerText = '0 ฿');
             }
         }
 
@@ -416,8 +471,8 @@
                 <div class="bg-white p-4 rounded-xl border ${isUnlocked ? 'border-green-300' : 'border-orange-200'} shadow-sm flex items-center justify-between">
                     <div><p class="font-bold text-gray-700">${item.name}</p><p class="text-lg font-bold text-gray-800">${item.price} ฿</p></div>
                     <div>${isUnlocked 
-                        ? `<button onclick="buyWishlist(${item.id}, '${item.name}', ${item.price})" class="bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-green-600">ปลดล็อกแล้ว ซื้อได้!</button>`
-                        : `<div class="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-2 rounded-lg flex items-center"><span class="animate-pulse mr-1">⏳</span> รออีก ${daysLeft} วัน</div>`}
+                        ? `<button onclick="buyWishlist(${item.id}, '${item.name}', ${item.price})" class="bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-green-600">ซื้อได้!</button>`
+                        : `<div class="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-2 rounded-lg flex items-center"><span class="animate-pulse mr-1">⏳</span> รอ ${daysLeft} วัน</div>`}
                     </div>
                 </div>`;
             });
@@ -443,52 +498,33 @@
             });
         }
 
-        function updateTrendLine(dailyStats, totalIn, totalOut, totalSave) {
+        function updateTrendLine(dailyStats) {
             const ctx = document.getElementById('trendChart').getContext('2d');
             if(trendChartObj != null) trendChartObj.destroy();
 
-            // เรียงวันที่ให้กราฟพุ่งจากซ้ายไปขวา (ตามปฏิทินจริง)
             let labels = Object.keys(dailyStats);
             let inData = [], outData = [], saveData = [];
             let accIn = 0, accOut = 0, accSave = 0;
 
             labels.forEach(date => {
-                accIn += dailyStats[date].in;
-                accOut += dailyStats[date].out;
-                accSave += dailyStats[date].save;
-                inData.push(accIn);
-                outData.push(accOut);
-                saveData.push(accSave);
+                accIn += dailyStats[date].in; accOut += dailyStats[date].out; accSave += dailyStats[date].save;
+                inData.push(accIn); outData.push(accOut); saveData.push(accSave);
             });
-
-            // ตรวจจับจุดตัด
-            let alertText = "สถานะ: ปกติ (รายรับ > รายจ่าย)";
-            let alertColor = "text-green-500";
-            if(totalOut > totalIn) {
-                alertText = "⚠️ อันตราย! เส้นรายจ่ายตัดรายรับแล้ว (ติดลบ)";
-                alertColor = "text-red-500";
-            } else if (totalOut > (totalIn * 0.8)) {
-                alertText = "⚠️ ระวัง! กราฟรายจ่ายใกล้ตัดกราฟรายรับ";
-                alertColor = "text-orange-500";
-            }
-            document.getElementById('trendAlert').className = `text-center text-xs mb-2 font-bold ${alertColor}`;
-            document.getElementById('trendAlert').innerText = alertText;
 
             trendChartObj = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'รายรับสะสม', data: inData, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                        { label: 'รายจ่ายสะสม', data: outData, borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                        { label: 'เงินออมสะสม', data: saveData, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, borderDash: [5, 5], tension: 0.3 }
+                        { label: 'รายรับ', data: inData, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
+                        { label: 'รายจ่าย', data: outData, borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
+                        { label: 'เงินออม', data: saveData, borderColor: '#3B82F6', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], tension: 0.3 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } },
-                    plugins: { legend: { display: false } },
-                    interaction: { mode: 'index', intersect: false }
+                    plugins: { legend: { display: false } }, interaction: { mode: 'index', intersect: false }
                 }
             });
         }
