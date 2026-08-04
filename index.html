@@ -17,21 +17,42 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- หน้า Auth (อัปเดตระบบ Cloud Login) -->
-    <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700 p-4">
+    <!-- 1. หน้าเข้าสู่ระบบ (Login Screen) -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-700 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner"><span class="text-4xl">🌱</span></div>
             <h2 class="text-3xl font-bold mb-1 text-green-700">พอ-ดี-พอร์ต</h2>
-            <p class="text-gray-500 mb-6 text-sm">แอปพลิเคชันวิเคราะห์การเงินด้วย AI</p>
-            <input type="text" id="authName" placeholder="ชื่อผู้ใช้งาน" class="w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-green-500 outline-none text-center font-semibold text-lg">
-            <input type="password" id="authPin" maxlength="4" placeholder="รหัส PIN 4 หลัก" class="text-center text-2xl w-full p-4 border border-gray-200 rounded-xl mb-6 focus:ring-2 focus:ring-green-500 outline-none">
+            <p class="text-gray-500 mb-6 text-sm">เข้าสู่ระบบเพื่อจัดการเงินของคุณ</p>
             
-            <button onclick="handleLogin()" class="w-full bg-green-600 text-white font-bold p-4 rounded-xl hover:bg-green-700 transition shadow-lg text-lg mb-3">เข้าสู่ระบบ</button>
-            <button onclick="handleRegister()" class="w-full bg-blue-50 text-blue-600 font-bold p-3 rounded-xl hover:bg-blue-100 transition text-sm border border-blue-100">ยังไม่มีบัญชี? สมัครสมาชิกใหม่</button>
+            <input type="text" id="loginName" placeholder="ชื่อผู้ใช้งาน" class="w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-green-500 outline-none text-center font-semibold text-lg">
+            <input type="password" id="loginPin" placeholder="รหัสผ่าน" class="text-center text-xl w-full p-4 border border-gray-200 rounded-xl mb-6 focus:ring-2 focus:ring-green-500 outline-none">
+            
+            <button onclick="handleLogin()" class="w-full bg-green-600 text-white font-bold p-4 rounded-xl hover:bg-green-700 transition shadow-lg text-lg mb-4">เข้าสู่ระบบ</button>
+            <div class="border-t border-gray-100 pt-4">
+                <button onclick="toggleAuthScreen('register')" class="text-green-600 font-bold hover:underline text-sm transition">ยังไม่มีบัญชี? สมัครสมาชิกใหม่</button>
+            </div>
         </div>
     </div>
 
-    <!-- หน้าแอปหลัก -->
+    <!-- 2. หน้าสมัครสมาชิก (Register Screen) -->
+    <div id="registerScreen" class="hidden min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner"><span class="text-3xl">📝</span></div>
+            <h2 class="text-3xl font-bold mb-1 text-blue-700">สร้างบัญชีใหม่</h2>
+            <p class="text-gray-500 mb-6 text-sm">สมัครเพื่อเก็บข้อมูลบน Cloud อย่างปลอดภัย</p>
+            
+            <input type="text" id="regName" placeholder="ตั้งชื่อผู้ใช้งาน" class="w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-center font-semibold text-lg">
+            <input type="password" id="regPin" placeholder="ตั้งรหัสผ่าน" class="text-center text-xl w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="password" id="regPinConfirm" placeholder="ยืนยันรหัสผ่านอีกครั้ง" class="text-center text-xl w-full p-4 border border-gray-200 rounded-xl mb-6 focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <button onclick="handleRegister()" class="w-full bg-blue-600 text-white font-bold p-4 rounded-xl hover:bg-blue-700 transition shadow-lg text-lg mb-4">สมัครสมาชิก</button>
+            <div class="border-t border-gray-100 pt-4">
+                <button onclick="toggleAuthScreen('login')" class="text-gray-500 font-bold hover:text-blue-600 text-sm transition">มีบัญชีแล้ว? กลับไปเข้าสู่ระบบ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. หน้าแอปหลัก (Main App) -->
     <div id="mainApp" class="hidden max-w-md mx-auto bg-white min-h-screen shadow-lg pb-24 relative overflow-x-hidden">
         
         <!-- Header -->
@@ -43,7 +64,7 @@
             <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-sm font-semibold transition">ออกระบบ</button>
         </div>
 
-        <!-- แท็บ 1: Dashboard (พร้อมระบบ AI Insights) -->
+        <!-- แท็บ 1: Dashboard (AI Insights) -->
         <div id="tab-dashboard" class="p-5 animate-fade-in">
             <div class="gradient-ai rounded-2xl shadow-lg p-5 mb-5 text-white relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 opacity-10 text-8xl">🤖</div>
@@ -182,7 +203,7 @@
             currentUser = localStorage.getItem('activeUser');
             if (currentUser) {
                 document.getElementById('displayUser').innerText = "ผู้ใช้งาน: " + currentUser;
-                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 setTxType('income'); 
                 loadDashboardData();
@@ -190,17 +211,53 @@
             }
         };
 
-        // --- ระบบ Cloud Auth (Login & Register ผ่าน Google Sheets) ---
+        // --- สลับหน้า Login / Register ---
+        function toggleAuthScreen(screen) {
+            if (screen === 'register') {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('registerScreen').classList.remove('hidden');
+            } else {
+                document.getElementById('registerScreen').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
+        }
+
+        // --- ระบบ Cloud Auth (บันทึกรหัสผ่านลง Google Sheets) ---
+        function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const pin = document.getElementById('regPin').value;
+            const pinConfirm = document.getElementById('regPinConfirm').value;
+            
+            if(!name || !pin) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุชื่อและรหัสผ่าน', 'warning');
+            if(pin !== pinConfirm) return Swal.fire('รหัสไม่ตรงกัน', 'กรุณายืนยันรหัสผ่านให้ตรงกัน', 'error');
+
+            Swal.fire({ title: 'กำลังสร้างบัญชี...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            
+            fetch(API_URL, {
+                method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: 'register', username: name, password: pin })
+            }).then(res => res.json()).then(result => {
+                if(result.status === 'success') {
+                    Swal.fire('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ', 'success');
+                    document.getElementById('regName').value = ""; document.getElementById('regPin').value = ""; document.getElementById('regPinConfirm').value = "";
+                    document.getElementById('loginName').value = name; 
+                    toggleAuthScreen('login');
+                } else {
+                    Swal.fire('ผิดพลาด', result.message, 'error');
+                }
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
+        }
+
         function handleLogin() {
-            const name = document.getElementById('authName').value.trim();
-            const pin = document.getElementById('authPin').value;
-            if(!name || pin.length !== 4) return Swal.fire('ข้อมูลไม่ครบ', 'ระบุชื่อและ PIN 4 หลัก', 'warning');
+            const name = document.getElementById('loginName').value.trim();
+            const pin = document.getElementById('loginPin').value;
+            if(!name || !pin) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุชื่อและรหัสผ่าน', 'warning');
 
             Swal.fire({ title: 'กำลังตรวจสอบข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
             
             fetch(API_URL, {
                 method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'login', username: name, pin: pin })
+                body: JSON.stringify({ action: 'login', username: name, password: pin })
             }).then(res => res.json()).then(result => {
                 if(result.status === 'success') {
                     Swal.close();
@@ -211,31 +268,12 @@
             }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
 
-        function handleRegister() {
-            const name = document.getElementById('authName').value.trim();
-            const pin = document.getElementById('authPin').value;
-            if(!name || pin.length !== 4) return Swal.fire('ข้อมูลไม่ครบ', 'ระบุชื่อและ PIN 4 หลัก', 'warning');
-
-            Swal.fire({ title: 'กำลังสร้างบัญชี...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-            
-            fetch(API_URL, {
-                method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'register', username: name, pin: pin })
-            }).then(res => res.json()).then(result => {
-                if(result.status === 'success') {
-                    Swal.fire('สำเร็จ', 'สร้างบัญชีเรียบร้อย', 'success');
-                    loginSuccess(name);
-                } else {
-                    Swal.fire('ผิดพลาด', result.message, 'error');
-                }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
-        }
-
         function loginSuccess(name) {
             currentUser = name; localStorage.setItem('activeUser', currentUser); 
-            document.getElementById('authName').value = ""; document.getElementById('authPin').value = "";
+            document.getElementById('loginName').value = ""; document.getElementById('loginPin').value = "";
             document.getElementById('displayUser').innerText = "ผู้ใช้งาน: " + currentUser;
-            document.getElementById('authScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('loginScreen').classList.add('hidden'); 
+            document.getElementById('mainApp').classList.remove('hidden');
             setTxType('income'); loadDashboardData(); renderWishlist();
         }
 
