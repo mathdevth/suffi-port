@@ -61,7 +61,10 @@
                 <h1 class="text-xl font-bold tracking-wide">พอ-ดี-พอร์ต</h1>
                 <p class="text-xs mt-1 text-green-100" id="displayUser">ผู้ใช้งาน: ...</p>
             </div>
-            <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-sm font-semibold transition">ออกระบบ</button>
+            <div class="flex items-center gap-1.5">
+                <button onclick="openChangePasswordModal()" class="bg-white/20 hover:bg-white/30 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition">เปลี่ยนรหัส</button>
+                <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition">ออกระบบ</button>
+            </div>
         </div>
 
         <!-- แท็บ 1: Dashboard (AI Insights) -->
@@ -222,7 +225,6 @@
             }
         }
 
-        // --- ระบบ Cloud Auth (บันทึกรหัสผ่านลง Google Sheets) ---
         function handleRegister() {
             const name = document.getElementById('regName').value.trim();
             const pin = document.getElementById('regPin').value;
@@ -245,7 +247,7 @@
                 } else {
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
 
         function handleLogin() {
@@ -266,6 +268,51 @@
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
             }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+        }
+
+        // --- ฟังก์ชันเปลี่ยนรหัสผ่าน ---
+        async function openChangePasswordModal() {
+            const { value: formValues } = await Swal.fire({
+                title: 'เปลี่ยนรหัสผ่าน',
+                html: `
+                    <div class="text-left mt-2 space-y-3">
+                        <div>
+                            <label class="block text-sm mb-1 text-gray-600">รหัสผ่านเดิม</label>
+                            <input id="swal-old-pin" type="password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="รหัสผ่านเดิม">
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1 text-gray-600">รหัสผ่านใหม่</label>
+                            <input id="swal-new-pin" type="password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="รหัสผ่านใหม่">
+                        </div>
+                    </div>`,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยันเปลี่ยนรหัส',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#10B981',
+                preConfirm: () => {
+                    const oldP = document.getElementById('swal-old-pin').value;
+                    const newP = document.getElementById('swal-new-pin').value;
+                    if (!oldP || !newP) {
+                        Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
+                    }
+                    return { oldPassword: oldP, newPassword: newP }
+                }
+            });
+
+            if (formValues) {
+                Swal.fire({ title: 'กำลังอัปเดตรหัสผ่าน...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                fetch(API_URL, {
+                    method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: 'change_password', username: currentUser, oldPassword: formValues.oldPassword, newPassword: formValues.newPassword })
+                }).then(res => res.json()).then(result => {
+                    if(result.status === 'success') {
+                        Swal.fire('สำเร็จ!', result.message, 'success');
+                    } else {
+                        Swal.fire('ผิดพลาด', result.message, 'error');
+                    }
+                }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+            }
         }
 
         function loginSuccess(name) {
@@ -490,7 +537,7 @@
             }
         }
 
-        // ตะกร้าชะลอความอยาก
+        // --- ตะกร้าชะลอความอยาก (เพิ่มปุ่มลบรายการทิ้งได้) ---
         function addToWishlist(itemName, price) {
             let list = JSON.parse(localStorage.getItem(`wishlist_${currentUser}`)) || [];
             let unlockDate = new Date(); unlockDate.setDate(unlockDate.getDate() + 7); 
@@ -514,13 +561,36 @@
                 html += `
                 <div class="bg-white p-4 rounded-xl border ${isUnlocked ? 'border-green-300' : 'border-orange-200'} shadow-sm flex items-center justify-between">
                     <div><p class="font-bold text-gray-700">${item.name}</p><p class="text-lg font-bold text-gray-800">${item.price} ฿</p></div>
-                    <div>${isUnlocked 
-                        ? `<button onclick="buyWishlist(${item.id}, '${item.name}', ${item.price})" class="bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-green-600">ซื้อได้!</button>`
-                        : `<div class="bg-orange-100 text-orange-600 text-xs font-bold px-3 py-2 rounded-lg flex items-center"><span class="animate-pulse mr-1">⏳</span> รอ ${daysLeft} วัน</div>`}
+                    <div class="flex items-center gap-2">
+                        ${isUnlocked 
+                            ? `<button onclick="buyWishlist(${item.id}, '${item.name}', ${item.price})" class="bg-green-500 text-white text-xs font-bold px-3 py-2 rounded-lg hover:bg-green-600">ซื้อได้!</button>`
+                            : `<div class="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-2 rounded-lg flex items-center"><span class="animate-pulse mr-1">⏳</span> รอ ${daysLeft} วัน</div>`
+                        }
+                        <button onclick="deleteWishlist(${item.id})" class="bg-gray-100 text-red-500 hover:bg-red-50 hover:text-red-700 text-xs font-bold px-2.5 py-2 rounded-lg transition" title="ลบทิ้ง">✕</button>
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
+        }
+
+        function deleteWishlist(id) {
+            Swal.fire({
+                title: 'ลบออกจากตะกร้า?',
+                text: "คุณเปลี่ยนใจไม่ต้องการของชิ้นนี้แล้วใช่ไหม",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                confirmButtonText: 'ลบทิ้ง',
+                cancelButtonText: 'เก็บไว้ก่อน'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let list = JSON.parse(localStorage.getItem(`wishlist_${currentUser}`)) || [];
+                    list = list.filter(item => item.id !== id);
+                    localStorage.setItem(`wishlist_${currentUser}`, JSON.stringify(list));
+                    renderWishlist();
+                    Swal.fire('ลบแล้ว!', 'นำรายการออกจากตะกร้าเรียบร้อย', 'success');
+                }
+            })
         }
 
         function buyWishlist(id, name, price) {
