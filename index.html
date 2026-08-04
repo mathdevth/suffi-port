@@ -460,40 +460,62 @@
             });
         }
 
+        // --- อัปเดต: หน้าต่างอธิบาย พยากรณ์เงินหมด (Burn Rate) แสดงเป็นเศษส่วน ---
         function showBurnRateInfo() {
             Swal.fire({
                 title: 'พยากรณ์เงินหมด (Burn Rate)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
-                        <p>ระบบ <b>AI คำนวณความเสี่ยง</b> จะพยากรณ์ว่า <i>"เงินคงเหลือของคุณจะหมดภายในกี่วัน"</i> โดยใช้สมการคณิตศาสตร์:</p>
-                        <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-lg text-blue-600">
-                            x = c ÷ m
+                        <p>ระบบ <b>AI คำนวณความเสี่ยง</b> จะพยากรณ์ว่า <i>"เงินคงเหลือของคุณจะหมดภายในกี่วัน"</i> โดยใช้สมการเชิงเส้น:</p>
+                        
+                        <!-- กล่องสมการแบบเศษส่วน -->
+                        <div class="bg-gray-100 py-4 px-2 rounded-lg flex items-center justify-center text-blue-600 font-bold text-base shadow-inner border border-gray-200">
+                            <span>x = </span>
+                            <div class="inline-flex flex-col items-center mx-2 align-middle text-sm transform -translate-y-0.5">
+                                <span class="border-b-2 border-blue-600 px-2 leading-none pb-1">c</span>
+                                <span class="px-2 leading-none pt-1">m</span>
+                            </div>
                         </div>
+
                         <ul class="list-disc pl-5 space-y-1 mt-2">
                             <li><b>x (จำนวนวัน):</b> เวลาที่คาดว่าเงินจะหมด</li>
                             <li><b>c (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
-                            <li><b>m (ค่าเฉลี่ยการจ่าย):</b> อัตราการใช้จ่ายเฉลี่ยต่อวันของคุณ</li>
+                            <li><b>m (ค่าเฉลี่ยการจ่าย):</b> อัตราการใช้จ่ายเฉลี่ยต่อวัน (ความชัน)</li>
                         </ul>
                         <hr class="my-2 border-gray-200">
-                        <p class="text-xs text-gray-500"><b>คำแนะนำ:</b> หากตัวเลขจำนวนวันน้อยเกินไป คุณควรลดรายจ่ายในหมวด "ฟุ่มเฟือย" เพื่อยืดระยะเวลา (Runway) ให้อยู่รอดได้นานขึ้น!</p>
+                        <p class="text-xs text-gray-500"><b>คำแนะนำ:</b> หากตัวเลขจำนวนวัน (x) น้อยเกินไป คุณควรลดรายจ่ายในหมวด "ฟุ่มเฟือย" เพื่อลดความชัน (m) ทำให้ยืดระยะเวลาให้อยู่รอดได้นานขึ้น!</p>
                     </div>
                 `,
                 icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
             });
         }
 
+        // --- อัปเดต: หน้าต่างอธิบาย จุดตัดวิกฤต (Intersection) แสดงระบบสมการเต็มรูปแบบ ---
         function showIntersectInfo() {
             Swal.fire({
                 title: 'จุดวิกฤต (Deficit Intersection)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
-                        <p>ระบบใช้ความรู้เรื่อง <b>ระบบสมการเชิงเส้นสองตัวแปร</b> เพื่อหาจุดที่กราฟรายจ่ายจะพุ่งขึ้นมาตัดกับกราฟรายรับ (จุดวิกฤต):</p>
-                        <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-blue-600">
-                            y₁ = y₂
+                        <p>ระบบใช้ความรู้เรื่อง <b>ระบบสมการเชิงเส้นสองตัวแปร</b> เพื่อหาจุดที่กราฟรายจ่ายจะพุ่งขึ้นมาตัดกับกราฟรายรับ (จุดวิกฤต) โดยกำหนดให้:</p>
+                        
+                        <!-- กล่องระบบสมการแบบเศษส่วน -->
+                        <div class="bg-gray-100 py-3 px-2 rounded-lg flex flex-col items-center justify-center text-blue-600 font-bold text-sm shadow-inner border border-gray-200 space-y-1.5">
+                            <div>y₁ = m₁x + c₁ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายรับ)</span></div>
+                            <div>y₂ = m₂x + c₂ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายจ่าย)</span></div>
+                            <div class="w-3/4 border-t border-blue-200 my-1"></div>
+                            <div class="flex items-center text-gray-700 text-xs">หาจุดตัด (y₁ = y₂) จะได้ค่า x (วัน) คือ:</div>
+                            <div class="flex items-center text-base mt-1">
+                                <span>x = </span>
+                                <div class="inline-flex flex-col items-center mx-2 align-middle text-sm transform -translate-y-0.5">
+                                    <span class="border-b-2 border-blue-600 px-2 leading-none pb-1">c₂ - c₁</span>
+                                    <span class="px-2 leading-none pt-1">m₁ - m₂</span>
+                                </div>
+                            </div>
                         </div>
-                        <ul class="list-disc pl-5 space-y-1 mt-2">
-                            <li><b>y₁ (สมการรายรับ):</b> แนวโน้มเงินได้</li>
-                            <li><b>y₂ (สมการรายจ่าย):</b> แนวโน้มการใช้เงิน</li>
+
+                        <ul class="list-disc pl-5 space-y-1 mt-2 text-xs">
+                            <li><b>m₁, m₂:</b> อัตราการเปลี่ยนแปลง (ความชัน) ของรายรับและรายจ่ายเฉลี่ยต่อวัน</li>
+                            <li><b>c₁, c₂:</b> ยอดเงินตั้งต้น (จุดตัดแกน Y)</li>
                         </ul>
                         <p class="text-xs text-gray-500 mt-2"><b>ความหมาย:</b> หากระบบแจ้งเตือนว่ากำลังจะติดลบในไม่กี่วัน แสดงว่าความชัน (Slope) ของเส้นรายจ่ายของคุณสูงกว่ารายรับ ควรงดการสร้างรายจ่ายใหม่ทันที!</p>
                     </div>
