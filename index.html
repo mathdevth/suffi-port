@@ -56,14 +56,20 @@
     <div id="mainApp" class="hidden max-w-md mx-auto bg-white min-h-screen shadow-lg pb-24 relative overflow-x-hidden">
         
         <!-- Header -->
-        <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-6 rounded-b-3xl shadow-md flex justify-between items-center">
+        <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-5 rounded-b-3xl shadow-md flex justify-between items-start">
             <div>
-                <h1 class="text-xl font-bold tracking-wide">พอ-ดี-พอร์ต</h1>
+                <h1 class="text-xl font-bold tracking-wide mt-1">พอ-ดี-พอร์ต</h1>
                 <p class="text-xs mt-1 text-green-100" id="displayUser">ผู้ใช้งาน: ...</p>
             </div>
-            <div class="flex items-center gap-1.5">
-                <button onclick="openChangePasswordModal()" class="bg-white/20 hover:bg-white/30 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition">เปลี่ยนรหัส</button>
-                <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition">ออกระบบ</button>
+            <div class="flex flex-col items-end gap-1">
+                <button onclick="refreshData()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center shadow-sm">
+                    <svg id="refreshIcon" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> อัปเดตข้อมูล
+                </button>
+                <div class="flex items-center gap-2 mt-1">
+                    <button onclick="openChangePasswordModal()" class="text-green-100 hover:text-white text-xs underline transition">เปลี่ยนรหัส</button>
+                    <span class="text-green-300/50 text-xs">|</span>
+                    <button onclick="logout()" class="text-green-100 hover:text-white text-xs underline transition">ออกระบบ</button>
+                </div>
             </div>
         </div>
 
@@ -73,20 +79,40 @@
                 <div class="absolute -right-4 -top-4 opacity-10 text-8xl">🤖</div>
                 <h2 class="font-bold text-sm mb-3 flex items-center"><span class="text-xl mr-2">✨</span> AI Smart Insights</h2>
                 <div class="space-y-3 relative z-10">
-                    <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-                        <p class="text-xs text-blue-100 mb-1">ดัชนีสุขภาพการเงิน (SHI)</p>
+                    
+                    <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-xs text-blue-100">ดัชนีสุขภาพการเงิน (SHI)</p>
+                            <button onclick="showShiInfo()" class="text-white hover:text-blue-200 transition bg-white/20 rounded-full p-1" title="อธิบายเกณฑ์ SHI">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
                         <div class="flex items-end justify-between">
                             <h3 class="text-2xl font-bold" id="aiShiScore">0<span class="text-sm font-normal">/100</span></h3>
                             <span class="text-xs font-semibold px-2 py-1 bg-white/30 rounded" id="aiShiLevel">-</span>
                         </div>
                     </div>
+
                     <div class="flex gap-3">
-                        <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-                            <p class="text-xs text-blue-100 mb-1">พยากรณ์เงินหมด</p>
+                        <!-- ปุ่มข้อมูล พยากรณ์เงินหมด -->
+                        <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
+                            <div class="flex justify-between items-center mb-1">
+                                <p class="text-xs text-blue-100">พยากรณ์เงินหมด</p>
+                                <button onclick="showBurnRateInfo()" class="text-white hover:text-blue-200 transition bg-white/20 rounded-full p-1" title="อธิบายสมการ">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </button>
+                            </div>
                             <h3 class="text-sm font-bold" id="aiBurnRate">กำลังคำนวณ...</h3>
                         </div>
-                        <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-                            <p class="text-xs text-blue-100 mb-1">พยากรณ์จุดตัดวิกฤต</p>
+                        
+                        <!-- ปุ่มข้อมูล พยากรณ์จุดตัดวิกฤต -->
+                        <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
+                            <div class="flex justify-between items-center mb-1">
+                                <p class="text-xs text-blue-100">จุดตัดวิกฤต</p>
+                                <button onclick="showIntersectInfo()" class="text-white hover:text-blue-200 transition bg-white/20 rounded-full p-1" title="อธิบายสมการ">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </button>
+                            </div>
                             <h3 class="text-sm font-bold text-orange-200" id="aiIntersect">กำลังคำนวณ...</h3>
                         </div>
                     </div>
@@ -109,9 +135,6 @@
 
             <div class="flex justify-between items-center mb-3">
                 <h2 class="font-bold text-gray-700 text-sm">ประวัติล่าสุด</h2>
-                <button onclick="refreshData()" class="text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center font-semibold">
-                    <svg id="refreshIcon" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> รีเฟรช
-                </button>
             </div>
             <div id="historyData" class="text-sm bg-gray-50 p-3 rounded-2xl border border-gray-100 h-64 overflow-y-auto"></div>
         </div>
@@ -195,7 +218,7 @@
 
     <!-- ================= JavaScript ================= -->
     <script>
-        // *** 1. นำ URL API อันใหม่จาก Google Apps Script มาใส่ตรงนี้ ***
+        // *** 1. นำ URL API ของคุณครูมาใส่ตรงนี้ ***
         const API_URL = "https://script.google.com/macros/s/AKfycby03sXXVMH13Y0V90HE0p8PQE-1AxgkTdknvjh4jIUPiNihsR9mFbLyzx1zQfWXIRcl/exec";
         
         let expenseChartObj = null;
@@ -214,7 +237,7 @@
             }
         };
 
-        // --- สลับหน้า Login / Register ---
+        // --- ระบบ Auth ---
         function toggleAuthScreen(screen) {
             if (screen === 'register') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -247,7 +270,7 @@
                 } else {
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
         }
 
         function handleLogin() {
@@ -270,9 +293,8 @@
             }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
 
-        // --- ฟังก์ชันเปลี่ยนรหัสผ่าน ---
-        async function openChangePasswordModal() {
-            const { value: formValues } = await Swal.fire({
+        function openChangePasswordModal() {
+            Swal.fire({
                 title: 'เปลี่ยนรหัสผ่าน',
                 html: `
                     <div class="text-left mt-2 space-y-3">
@@ -285,34 +307,93 @@
                             <input id="swal-new-pin" type="password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="รหัสผ่านใหม่">
                         </div>
                     </div>`,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'ยืนยันเปลี่ยนรหัส',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#10B981',
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'ยืนยันเปลี่ยนรหัส', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#10B981',
                 preConfirm: () => {
                     const oldP = document.getElementById('swal-old-pin').value;
                     const newP = document.getElementById('swal-new-pin').value;
-                    if (!oldP || !newP) {
-                        Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
-                    }
+                    if (!oldP || !newP) { Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน'); }
                     return { oldPassword: oldP, newPassword: newP }
                 }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังอัปเดตรหัสผ่าน...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                    fetch(API_URL, {
+                        method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: 'change_password', username: currentUser, oldPassword: result.value.oldPassword, newPassword: result.value.newPassword })
+                    }).then(res => res.json()).then(result => {
+                        if(result.status === 'success') { Swal.fire('สำเร็จ!', result.message, 'success'); } 
+                        else { Swal.fire('ผิดพลาด', result.message, 'error'); }
+                    }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+                }
             });
+        }
 
-            if (formValues) {
-                Swal.fire({ title: 'กำลังอัปเดตรหัสผ่าน...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                fetch(API_URL, {
-                    method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: 'change_password', username: currentUser, oldPassword: formValues.oldPassword, newPassword: formValues.newPassword })
-                }).then(res => res.json()).then(result => {
-                    if(result.status === 'success') {
-                        Swal.fire('สำเร็จ!', result.message, 'success');
-                    } else {
-                        Swal.fire('ผิดพลาด', result.message, 'error');
-                    }
-                }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
-            }
+        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI ---
+        function showShiInfo() {
+            Swal.fire({
+                title: 'ดัชนีสุขภาพการเงิน (SHI)',
+                html: `
+                    <div class="text-left text-sm space-y-3 text-gray-700">
+                        <p><b>SHI (Sufficiency Health Index)</b> คือคะแนนประเมินพฤติกรรมทางการเงินตามหลักเศรษฐกิจพอเพียง (เต็ม 100 คะแนน) คำนวณจากสมการ:</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><b><span class="text-green-600">+ เพิ่มคะแนน:</span></b> สัดส่วนเงินออม ยิ่งออมมากยิ่งได้บวกเยอะ</li>
+                            <li><b><span class="text-red-600">- ลดคะแนน:</span></b> สัดส่วนของฟุ่มเฟือย ยิ่งใช้มากยิ่งโดนหัก</li>
+                            <li><b><span class="text-blue-600">รักษาสมดุล:</span></b> สัดส่วนของจำเป็น ควรอยู่ใกล้เคียง 50%</li>
+                        </ul>
+                        <hr class="my-2 border-gray-200">
+                        <p class="font-bold text-center mb-1">เกณฑ์ระดับคะแนน:</p>
+                        <div class="grid grid-cols-2 gap-2 text-center text-xs font-bold">
+                            <div class="bg-green-100 text-green-700 p-2 rounded-lg">🌟 80 - 100<br>ยอดเยี่ยม</div>
+                            <div class="bg-blue-100 text-blue-700 p-2 rounded-lg">🟢 60 - 79<br>ดีมาก</div>
+                            <div class="bg-yellow-100 text-yellow-700 p-2 rounded-lg">🟡 40 - 59<br>พอใช้</div>
+                            <div class="bg-red-100 text-red-700 p-2 rounded-lg">🔴 0 - 39<br>ต้องปรับปรุง</div>
+                        </div>
+                    </div>
+                `,
+                icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
+            });
+        }
+
+        function showBurnRateInfo() {
+            Swal.fire({
+                title: 'พยากรณ์เงินหมด (Burn Rate)',
+                html: `
+                    <div class="text-left text-sm space-y-3 text-gray-700">
+                        <p>ระบบ <b>AI คำนวณความเสี่ยง</b> จะพยากรณ์ว่า <i>"เงินคงเหลือของคุณจะหมดภายในกี่วัน"</i> โดยใช้สมการคณิตศาสตร์:</p>
+                        <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-lg text-blue-600">
+                            x = c ÷ m
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><b>x (จำนวนวัน):</b> เวลาที่คาดว่าเงินจะหมด</li>
+                            <li><b>c (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
+                            <li><b>m (ค่าเฉลี่ยการจ่าย):</b> อัตราการใช้จ่ายเฉลี่ยต่อวันของคุณ</li>
+                        </ul>
+                        <hr class="my-2 border-gray-200">
+                        <p class="text-xs text-gray-500"><b>คำแนะนำ:</b> หากตัวเลขจำนวนวันน้อยเกินไป คุณควรลดรายจ่ายในหมวด "ฟุ่มเฟือย" เพื่อยืดระยะเวลา (Runway) ให้อยู่รอดได้นานขึ้น!</p>
+                    </div>
+                `,
+                icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
+            });
+        }
+
+        function showIntersectInfo() {
+            Swal.fire({
+                title: 'จุดวิกฤต (Deficit Intersection)',
+                html: `
+                    <div class="text-left text-sm space-y-3 text-gray-700">
+                        <p>ระบบใช้ความรู้เรื่อง <b>ระบบสมการเชิงเส้นสองตัวแปร</b> เพื่อหาจุดที่กราฟรายจ่ายจะพุ่งขึ้นมาตัดกับกราฟรายรับ (จุดวิกฤต):</p>
+                        <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-blue-600">
+                            y₁ = y₂
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><b>y₁ (สมการรายรับ):</b> แนวโน้มเงินได้</li>
+                            <li><b>y₂ (สมการรายจ่าย):</b> แนวโน้มการใช้เงิน</li>
+                        </ul>
+                        <p class="text-xs text-gray-500 mt-2"><b>ความหมาย:</b> หากระบบแจ้งเตือนว่ากำลังจะติดลบในไม่กี่วัน แสดงว่าความชัน (Slope) ของเส้นรายจ่ายของคุณสูงกว่ารายรับ ควรงดการสร้างรายจ่ายใหม่ทันที!</p>
+                    </div>
+                `,
+                icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
+            });
         }
 
         function loginSuccess(name) {
@@ -537,7 +618,7 @@
             }
         }
 
-        // --- ตะกร้าชะลอความอยาก (เพิ่มปุ่มลบรายการทิ้งได้) ---
+        // ตะกร้าชะลอความอยาก
         function addToWishlist(itemName, price) {
             let list = JSON.parse(localStorage.getItem(`wishlist_${currentUser}`)) || [];
             let unlockDate = new Date(); unlockDate.setDate(unlockDate.getDate() + 7); 
