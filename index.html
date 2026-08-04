@@ -168,15 +168,37 @@
             </form>
         </div>
 
-        <!-- แท็บ 3: หน้าวางแผน (ตาราง 50/30/20) -->
+        <!-- แท็บ 3: หน้าวางแผน -->
         <div id="tab-plan" class="hidden p-5 animate-fade-in">
+            <!-- ยอดเงินคงเหลือ -->
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-5 rounded-2xl shadow-lg mb-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 opacity-10 text-6xl transform translate-x-4 -translate-y-4">💰</div>
                 <p class="text-sm text-gray-300 font-medium">ยอดเงินคงเหลือสามารถใช้ได้</p>
                 <h2 class="text-4xl font-bold mt-1" id="currentBalance">0 <span class="text-xl font-normal">฿</span></h2>
             </div>
 
-            <h2 class="font-bold text-gray-700 text-sm mb-3">เป้าหมายแบ่งตามยอดเงินคงเหลือ (50/30/20)</h2>
+            <!-- ระบบคำนวณงบประมาณรายวัน (เพิ่มใหม่) -->
+            <h2 class="font-bold text-gray-700 text-sm mb-3 flex items-center"><span class="text-xl mr-2">📅</span> การจัดสรรงบรายวัน</h2>
+            <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 p-4 mb-6">
+                <label class="text-sm text-gray-600 font-medium mb-2 block">จำนวนวันที่ต้องการใช้เงินก้อนนี้ให้รอด</label>
+                <div class="flex gap-2 mb-2">
+                    <input type="number" id="planDays" min="1" placeholder="เช่น 5, 7, 30" class="w-2/3 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-center font-bold text-lg">
+                    <button onclick="calculateDailyBudget()" class="w-1/3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md">คำนวณ</button>
+                </div>
+                <!-- ผลลัพธ์การคำนวณรายวัน -->
+                <div id="dailyBudgetResult" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 text-center animate-fade-in mt-3">
+                    <p class="text-xs text-blue-600 font-semibold mb-1">คุณสามารถใช้จ่ายได้สูงสุด</p>
+                    <h3 class="text-3xl font-extrabold text-blue-800 mb-2" id="dailyAmount">0 ฿ <span class="text-sm font-normal text-blue-600">/ วัน</span></h3>
+                    <div class="flex justify-center gap-4 text-xs font-bold border-t border-blue-200 pt-3">
+                        <span class="text-blue-700">ข้าว(50%): <br><span id="dailyNeed" class="text-sm">0</span></span>
+                        <span class="text-red-500">ขนม(30%): <br><span id="dailyWant" class="text-sm">0</span></span>
+                        <span class="text-green-600">เก็บ(20%): <br><span id="dailySave" class="text-sm">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ตาราง 50/30/20 -->
+            <h2 class="font-bold text-gray-700 text-sm mb-3">เป้าหมายแบ่งตามยอดคงเหลือรวม (50/30/20)</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden mb-6">
                 <div class="flex border-b border-gray-100">
                     <div class="w-1/3 p-3 bg-blue-50 text-center border-r border-gray-100">
@@ -223,6 +245,9 @@
         let expenseChartObj = null;
         let trendChartObj = null;
         let currentUser = null; 
+        
+        // ตัวแปรเก็บเงินคงเหลือ สำหรับใช้ในฟังก์ชันคำนวณงบรายวัน
+        window.currentBalance = 0; 
 
         window.onload = function() {
             currentUser = localStorage.getItem('activeUser');
@@ -269,7 +294,7 @@
                 } else {
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
 
         function handleLogin() {
@@ -327,7 +352,6 @@
             });
         }
 
-        // --- หน้าต่างคณะผู้จัดทำ (Credits) ---
         function showCredits() {
             Swal.fire({
                 title: 'คณะผู้จัดทำโครงงาน',
@@ -364,17 +388,19 @@
             });
         }
 
-        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI ---
         function showShiInfo() {
             Swal.fire({
                 title: 'ดัชนีสุขภาพการเงิน (SHI)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p><b>SHI (Sufficiency Health Index)</b> คือคะแนนประเมินพฤติกรรมทางการเงินตามหลักเศรษฐกิจพอเพียง (เต็ม 100 คะแนน) คำนวณจากสมการ:</p>
-                        <ul class="list-disc pl-5 space-y-1">
-                            <li><b><span class="text-green-600">+ เพิ่มคะแนน:</span></b> สัดส่วนเงินออม ยิ่งออมมากยิ่งได้บวกเยอะ</li>
-                            <li><b><span class="text-red-600">- ลดคะแนน:</span></b> สัดส่วนของฟุ่มเฟือย ยิ่งใช้มากยิ่งโดนหัก</li>
-                            <li><b><span class="text-blue-600">รักษาสมดุล:</span></b> สัดส่วนของจำเป็น ควรอยู่ใกล้เคียง 50%</li>
+                        <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-sm text-blue-600 overflow-x-auto">
+                            SHI = 50 + 100(S/I) - 100(W/I) + 40(0.5 - |N/I - 0.5|)
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1 text-xs mt-2">
+                            <li><b><span class="text-green-600">S/I (Savings):</span></b> สัดส่วนเงินออม ยิ่งออมมากยิ่งบวกเพิ่ม</li>
+                            <li><b><span class="text-red-600">W/I (Wants):</span></b> สัดส่วนของฟุ่มเฟือย ยิ่งใช้มากยิ่งโดนหัก</li>
+                            <li><b><span class="text-blue-600">N/I (Needs):</span></b> สัดส่วนของจำเป็น หากรักษาสมดุลใกล้เคียง 50% จะได้โบนัสคะแนนเพิ่ม</li>
                         </ul>
                         <hr class="my-2 border-gray-200">
                         <p class="font-bold text-center mb-1">เกณฑ์ระดับคะแนน:</p>
@@ -399,7 +425,7 @@
                         <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-lg text-blue-600">
                             x = c ÷ m
                         </div>
-                        <ul class="list-disc pl-5 space-y-1">
+                        <ul class="list-disc pl-5 space-y-1 mt-2">
                             <li><b>x (จำนวนวัน):</b> เวลาที่คาดว่าเงินจะหมด</li>
                             <li><b>c (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
                             <li><b>m (ค่าเฉลี่ยการจ่าย):</b> อัตราการใช้จ่ายเฉลี่ยต่อวันของคุณ</li>
@@ -421,7 +447,7 @@
                         <div class="bg-gray-100 p-3 rounded-lg text-center font-bold text-blue-600">
                             y₁ = y₂
                         </div>
-                        <ul class="list-disc pl-5 space-y-1">
+                        <ul class="list-disc pl-5 space-y-1 mt-2">
                             <li><b>y₁ (สมการรายรับ):</b> แนวโน้มเงินได้</li>
                             <li><b>y₂ (สมการรายจ่าย):</b> แนวโน้มการใช้เงิน</li>
                         </ul>
@@ -643,7 +669,9 @@
             }
         }
 
+        // --- ระบบคำนวณงบประมาณรายวัน ---
         function updateBudgetTable(balance) {
+            window.currentBalance = balance; 
             document.getElementById('currentBalance').innerText = `${balance.toLocaleString()} ฿`;
             if(balance > 0) {
                 document.getElementById('planNeeds').innerText = (balance * 0.5).toLocaleString() + ' ฿';
@@ -652,6 +680,28 @@
             } else {
                 ['planNeeds', 'planWants', 'planSavings'].forEach(id => document.getElementById(id).innerText = '0 ฿');
             }
+        }
+
+        function calculateDailyBudget() {
+            const days = parseInt(document.getElementById('planDays').value);
+            if (!days || days <= 0) {
+                return Swal.fire('ข้อมูลไม่ถูกต้อง', 'กรุณาระบุจำนวนวันให้ถูกต้อง (เช่น 5 หรือ 7)', 'warning');
+            }
+            if (window.currentBalance <= 0) {
+                return Swal.fire('เงินคงเหลือไม่พอ', 'คุณไม่มีเงินคงเหลือให้จัดสรรแล้ว', 'error');
+            }
+
+            const daily = window.currentBalance / days;
+            const dNeed = daily * 0.5;
+            const dWant = daily * 0.3;
+            const dSave = daily * 0.2;
+
+            document.getElementById('dailyAmount').innerHTML = `${daily.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} ฿ <span class="text-sm font-normal text-blue-600">/ วัน</span>`;
+            document.getElementById('dailyNeed').innerText = dNeed.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            document.getElementById('dailyWant').innerText = dWant.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+            document.getElementById('dailySave').innerText = dSave.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2});
+
+            document.getElementById('dailyBudgetResult').classList.remove('hidden');
         }
 
         // ตะกร้าชะลอความอยาก
