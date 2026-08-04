@@ -17,7 +17,7 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- หน้า Auth -->
+    <!-- หน้า Auth (อัปเดตระบบ Cloud Login) -->
     <div id="authScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner"><span class="text-4xl">🌱</span></div>
@@ -25,7 +25,9 @@
             <p class="text-gray-500 mb-6 text-sm">แอปพลิเคชันวิเคราะห์การเงินด้วย AI</p>
             <input type="text" id="authName" placeholder="ชื่อผู้ใช้งาน" class="w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-green-500 outline-none text-center font-semibold text-lg">
             <input type="password" id="authPin" maxlength="4" placeholder="รหัส PIN 4 หลัก" class="text-center text-2xl w-full p-4 border border-gray-200 rounded-xl mb-6 focus:ring-2 focus:ring-green-500 outline-none">
-            <button onclick="handleAuth()" class="w-full bg-green-600 text-white font-bold p-4 rounded-xl hover:bg-green-700 transition shadow-lg text-lg">เข้าสู่ระบบ / ลงทะเบียน</button>
+            
+            <button onclick="handleLogin()" class="w-full bg-green-600 text-white font-bold p-4 rounded-xl hover:bg-green-700 transition shadow-lg text-lg mb-3">เข้าสู่ระบบ</button>
+            <button onclick="handleRegister()" class="w-full bg-blue-50 text-blue-600 font-bold p-3 rounded-xl hover:bg-blue-100 transition text-sm border border-blue-100">ยังไม่มีบัญชี? สมัครสมาชิกใหม่</button>
         </div>
     </div>
 
@@ -43,14 +45,10 @@
 
         <!-- แท็บ 1: Dashboard (พร้อมระบบ AI Insights) -->
         <div id="tab-dashboard" class="p-5 animate-fade-in">
-            
-            <!-- 🤖 กล่อง AI วิเคราะห์ด้วยสมการคณิตศาสตร์ -->
             <div class="gradient-ai rounded-2xl shadow-lg p-5 mb-5 text-white relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 opacity-10 text-8xl">🤖</div>
                 <h2 class="font-bold text-sm mb-3 flex items-center"><span class="text-xl mr-2">✨</span> AI Smart Insights</h2>
-                
                 <div class="space-y-3 relative z-10">
-                    <!-- SHI Index -->
                     <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
                         <p class="text-xs text-blue-100 mb-1">ดัชนีสุขภาพการเงิน (SHI)</p>
                         <div class="flex items-end justify-between">
@@ -58,14 +56,11 @@
                             <span class="text-xs font-semibold px-2 py-1 bg-white/30 rounded" id="aiShiLevel">-</span>
                         </div>
                     </div>
-                    
                     <div class="flex gap-3">
-                        <!-- Burn Rate -->
                         <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
                             <p class="text-xs text-blue-100 mb-1">พยากรณ์เงินหมด</p>
                             <h3 class="text-sm font-bold" id="aiBurnRate">กำลังคำนวณ...</h3>
                         </div>
-                        <!-- Intersection -->
                         <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm">
                             <p class="text-xs text-blue-100 mb-1">พยากรณ์จุดตัดวิกฤต</p>
                             <h3 class="text-sm font-bold text-orange-200" id="aiIntersect">กำลังคำนวณ...</h3>
@@ -74,13 +69,11 @@
                 </div>
             </div>
 
-            <!-- กราฟเส้น (Trend) -->
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 mb-5 border border-gray-100">
                 <h2 class="font-bold text-gray-700 text-center mb-1 text-sm">แนวโน้มการเงินสะสม (รายวัน)</h2>
                 <div class="relative h-48 w-full"><canvas id="trendChart"></canvas></div>
             </div>
 
-            <!-- กราฟวงกลม -->
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 mb-5 border border-gray-100 flex items-center">
                 <div class="w-1/2 relative h-32"><canvas id="expenseChart"></canvas></div>
                 <div class="w-1/2 pl-4 text-xs space-y-2">
@@ -90,7 +83,6 @@
                 </div>
             </div>
 
-            <!-- ประวัติล่าสุด -->
             <div class="flex justify-between items-center mb-3">
                 <h2 class="font-bold text-gray-700 text-sm">ประวัติล่าสุด</h2>
                 <button onclick="refreshData()" class="text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center font-semibold">
@@ -179,7 +171,7 @@
 
     <!-- ================= JavaScript ================= -->
     <script>
-        // *** 1. นำ URL API อันใหม่มาใส่ตรงนี้ ***
+        // *** 1. นำ URL API อันใหม่จาก Google Apps Script มาใส่ตรงนี้ ***
         const API_URL = "https://script.google.com/macros/s/AKfycby03sXXVMH13Y0V90HE0p8PQE-1AxgkTdknvjh4jIUPiNihsR9mFbLyzx1zQfWXIRcl/exec";
         
         let expenseChartObj = null;
@@ -198,24 +190,47 @@
             }
         };
 
-        // --- ระบบ Auth ---
-        function handleAuth() {
+        // --- ระบบ Cloud Auth (Login & Register ผ่าน Google Sheets) ---
+        function handleLogin() {
             const name = document.getElementById('authName').value.trim();
             const pin = document.getElementById('authPin').value;
             if(!name || pin.length !== 4) return Swal.fire('ข้อมูลไม่ครบ', 'ระบุชื่อและ PIN 4 หลัก', 'warning');
 
-            let users = JSON.parse(localStorage.getItem('suffiUsers')) || [];
-            let validUser = users.find(u => u.name === name);
-            if(validUser) {
-                if(validUser.pin === pin) { loginSuccess(name); } 
-                else { Swal.fire('ผิดพลาด', 'รหัส PIN ไม่ถูกต้อง', 'error'); }
-            } else {
-                users.push({ name: name, pin: pin });
-                localStorage.setItem('suffiUsers', JSON.stringify(users));
-                loginSuccess(name);
-                Swal.fire('ยินดีต้อนรับ', 'สร้างบัญชีเรียบร้อย', 'success');
-            }
+            Swal.fire({ title: 'กำลังตรวจสอบข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            
+            fetch(API_URL, {
+                method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: 'login', username: name, pin: pin })
+            }).then(res => res.json()).then(result => {
+                if(result.status === 'success') {
+                    Swal.close();
+                    loginSuccess(name);
+                } else {
+                    Swal.fire('ผิดพลาด', result.message, 'error');
+                }
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
+
+        function handleRegister() {
+            const name = document.getElementById('authName').value.trim();
+            const pin = document.getElementById('authPin').value;
+            if(!name || pin.length !== 4) return Swal.fire('ข้อมูลไม่ครบ', 'ระบุชื่อและ PIN 4 หลัก', 'warning');
+
+            Swal.fire({ title: 'กำลังสร้างบัญชี...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            
+            fetch(API_URL, {
+                method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: 'register', username: name, pin: pin })
+            }).then(res => res.json()).then(result => {
+                if(result.status === 'success') {
+                    Swal.fire('สำเร็จ', 'สร้างบัญชีเรียบร้อย', 'success');
+                    loginSuccess(name);
+                } else {
+                    Swal.fire('ผิดพลาด', result.message, 'error');
+                }
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+        }
+
         function loginSuccess(name) {
             currentUser = name; localStorage.setItem('activeUser', currentUser); 
             document.getElementById('authName').value = ""; document.getElementById('authPin').value = "";
@@ -223,8 +238,10 @@
             document.getElementById('authScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden');
             setTxType('income'); loadDashboardData(); renderWishlist();
         }
+
         function logout() { localStorage.removeItem('activeUser'); location.reload(); }
 
+        // --- ระบบแสดงผล UI ต่างๆ ---
         function showTab(tabName) {
             ['dashboard', 'record', 'plan'].forEach(tab => {
                 document.getElementById('tab-' + tab).classList.add('hidden');
@@ -234,7 +251,6 @@
             document.getElementById('nav-' + tabName).classList.replace('text-gray-400', 'text-green-600');
         }
 
-        // --- ตั้งค่าฟอร์ม ---
         function setTxType(type) {
             document.getElementById('txType').value = type;
             const catSelect = document.getElementById('category');
@@ -256,7 +272,6 @@
             }
         }
 
-        // --- ฟอร์ม Submit ---
         document.getElementById('recordForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const txDate = document.getElementById('txDate').value;
@@ -312,7 +327,7 @@
             Swal.fire({ title: loadingMsg, allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
             fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
             .then(res => res.json()).then(result => {
-                Swal.fire('สำเร็จ!', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                Swal.fire('สำเร็จ!', 'อัปเดตข้อมูลเรียบร้อย', 'success');
                 if(payload.action === 'add') document.getElementById('recordForm').reset();
                 loadDashboardData(); 
             }).catch(error => Swal.fire('ผิดพลาด', 'เชื่อมต่อขัดข้อง', 'error'));
@@ -375,7 +390,6 @@
 
                 let balance = totalIncome - totalExpense - totalSavings;
                 
-                // 🚀 ส่วนการประมวลผล AI Smart Insights 🚀
                 calculateAI_Insights(dailyStats, totalIncome, totalExpense, totalSavings, totalNeeds, totalWants, balance);
 
                 updateExpensePie(totalNeeds, totalWants, totalSavings);
@@ -388,21 +402,17 @@
             });
         }
 
-        // ================= 🤖 ฟังก์ชันคำนวณ AI (สมการคณิตศาสตร์) =================
         function calculateAI_Insights(dailyStats, totalIn, totalOut, totalSave, totalNeed, totalWant, balance) {
             let daysActive = Object.keys(dailyStats).length || 1;
             let avgIn = totalIn / daysActive;
             let avgOut = totalOut / daysActive;
 
-            // 1. ดัชนีสุขภาพการเงิน (SHI Model)
             let shiScore = 0;
             let shiLevel = "รอข้อมูล";
             if (totalIn > 0) {
-                // คำนวณแบบถ่วงน้ำหนัก (คะแนนเริ่มต้น 50, หักลบจากความเบี่ยงเบนของสัดส่วนอุดมคติ 50/30/20)
                 let needRatio = totalNeed / totalIn;
                 let wantRatio = totalWant / totalIn;
                 let saveRatio = totalSave / totalIn;
-                
                 shiScore = 50 + (saveRatio * 100) + ((0.5 - Math.abs(needRatio - 0.5)) * 40) - (wantRatio * 100);
                 shiScore = Math.max(0, Math.min(100, shiScore)).toFixed(0);
                 
@@ -414,7 +424,6 @@
             document.getElementById('aiShiScore').innerHTML = `${shiScore}<span class="text-sm font-normal">/100</span>`;
             document.getElementById('aiShiLevel').innerText = shiLevel;
 
-            // 2. สมการพยากรณ์เงินหมด (Burn Rate) : x = c / m
             if (balance > 0 && avgOut > 0) {
                 let daysLeft = (balance / avgOut).toFixed(1);
                 document.getElementById('aiBurnRate').innerHTML = `<span class="text-xl font-bold">${daysLeft}</span> วัน`;
@@ -424,16 +433,13 @@
                 document.getElementById('aiBurnRate').innerHTML = `ปลอดภัย ✅`;
             }
 
-            // 3. จุดตัดวิกฤต (System of Linear Equations)
             if (avgOut > avgIn && balance > 0) {
-                // หาระยะเวลาที่แกนรายจ่าย (ความชันสูงกว่า) จะพุ่งชนแกนรายรับ (y1 = y2)
                 let intersectDays = (balance / (avgOut - avgIn)).toFixed(0);
                 document.getElementById('aiIntersect').innerHTML = `ติดลบใน <span class="text-red-300 text-xl font-bold">${intersectDays}</span> วัน`;
             } else {
                 document.getElementById('aiIntersect').innerHTML = `<span class="text-green-300">ไม่มีแนวโน้มติดลบ ✅</span>`;
             }
         }
-        // =========================================================================
 
         function updateBudgetTable(balance) {
             document.getElementById('currentBalance').innerText = `${balance.toLocaleString()} ฿`;
