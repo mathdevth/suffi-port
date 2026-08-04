@@ -66,6 +66,8 @@
                     <svg id="refreshIcon" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> อัปเดตข้อมูล
                 </button>
                 <div class="flex items-center gap-2 mt-1">
+                    <button onclick="showCredits()" class="text-green-100 hover:text-white text-xs underline transition">ผู้จัดทำ</button>
+                    <span class="text-green-300/50 text-xs">|</span>
                     <button onclick="openChangePasswordModal()" class="text-green-100 hover:text-white text-xs underline transition">เปลี่ยนรหัส</button>
                     <span class="text-green-300/50 text-xs">|</span>
                     <button onclick="logout()" class="text-green-100 hover:text-white text-xs underline transition">ออกระบบ</button>
@@ -94,7 +96,6 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <!-- ปุ่มข้อมูล พยากรณ์เงินหมด -->
                         <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
                             <div class="flex justify-between items-center mb-1">
                                 <p class="text-xs text-blue-100">พยากรณ์เงินหมด</p>
@@ -104,8 +105,6 @@
                             </div>
                             <h3 class="text-sm font-bold" id="aiBurnRate">กำลังคำนวณ...</h3>
                         </div>
-                        
-                        <!-- ปุ่มข้อมูล พยากรณ์จุดตัดวิกฤต -->
                         <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
                             <div class="flex justify-between items-center mb-1">
                                 <p class="text-xs text-blue-100">จุดตัดวิกฤต</p>
@@ -325,6 +324,43 @@
                         else { Swal.fire('ผิดพลาด', result.message, 'error'); }
                     }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
                 }
+            });
+        }
+
+        // --- หน้าต่างคณะผู้จัดทำ (Credits) ---
+        function showCredits() {
+            Swal.fire({
+                title: 'คณะผู้จัดทำโครงงาน',
+                html: `
+                    <div class="text-left text-sm space-y-4 text-gray-700 mt-2">
+                        <div class="text-center">
+                            <h3 class="font-bold text-green-700 text-base mb-1">แอปพลิเคชัน “พอ-ดี-พอร์ต (Suffi-Port)”</h3>
+                            <p class="text-xs text-gray-600">โมเดลสมการเชิงเส้นและอสมการ<br>เพื่อสร้างดัชนีภูมิคุ้มกันทางการเงินตามหลักเศรษฐกิจพอเพียง</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <p class="font-bold text-blue-700 mb-1">👩‍💻 โดยนักเรียนผู้จัดทำ:</p>
+                            <ol class="list-decimal pl-5 space-y-1 text-xs font-semibold">
+                                <li>เด็กหญิงญาณิศา นราพล</li>
+                                <li>เด็กหญิงศุภัทรา สังข์เทศ</li>
+                                <li>เด็กหญิงจิรมาศ พีมี</li>
+                            </ol>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <p class="font-bold text-purple-700 mb-1">👨‍🏫 อาจารย์ที่ปรึกษา:</p>
+                            <ol class="list-decimal pl-5 space-y-1 text-xs font-semibold">
+                                <li>นายอชิตพล บุณรัตน์</li>
+                                <li>นางสาวสมใจ จันทรงกรด</li>
+                            </ol>
+                        </div>
+                        <div class="text-center text-xs text-gray-500 mt-4 border-t border-gray-100 pt-3">
+                            <p class="font-bold text-gray-700">🏫 โรงเรียนวังโพรงพิทยาคม</p>
+                            <p>สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาพิษณุโลก อุตรดิตถ์</p>
+                            <p class="mt-1 text-[10px]">ระยะเวลาทำโครงงาน: 24 มิ.ย. – 3 ส.ค. 2569 (ภาคเรียนที่ 1/2569)</p>
+                        </div>
+                    </div>
+                `,
+                width: '90%', padding: '1.5em', confirmButtonText: 'ปิดหน้าต่าง', confirmButtonColor: '#10B981',
+                showClass: { popup: 'animate-fade-in' }
             });
         }
 
