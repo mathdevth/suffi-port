@@ -55,11 +55,13 @@
     <!-- 3. หน้าแอปหลัก (Main App) -->
     <div id="mainApp" class="hidden max-w-md mx-auto bg-white min-h-screen shadow-lg pb-24 relative overflow-x-hidden">
         
-        <!-- Header -->
+        <!-- Header (อัปเดตเพิ่ม Badge แสดงสถิติต่อเนื่อง) -->
         <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-5 rounded-b-3xl shadow-md flex justify-between items-start">
             <div>
                 <h1 class="text-xl font-bold tracking-wide mt-1">พอ-ดี-พอร์ต</h1>
                 <p class="text-xs mt-1 text-green-100" id="displayUser">ผู้ใช้งาน: ...</p>
+                <!-- ป้ายแสดง Streak -->
+                <p class="text-[10px] bg-white/20 inline-block px-2.5 py-0.5 rounded-full mt-1.5 shadow-sm font-semibold border border-white/30" id="displayStreak">🔥 บันทึกต่อเนื่อง: 0 วัน</p>
             </div>
             <div class="flex flex-col items-end gap-1">
                 <button onclick="refreshData()" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center shadow-sm">
@@ -170,14 +172,12 @@
 
         <!-- แท็บ 3: หน้าวางแผน -->
         <div id="tab-plan" class="hidden p-5 animate-fade-in">
-            <!-- ยอดเงินคงเหลือ -->
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-5 rounded-2xl shadow-lg mb-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 opacity-10 text-6xl transform translate-x-4 -translate-y-4">💰</div>
                 <p class="text-sm text-gray-300 font-medium">ยอดเงินคงเหลือสามารถใช้ได้</p>
                 <h2 class="text-4xl font-bold mt-1" id="currentBalance">0 <span class="text-xl font-normal">฿</span></h2>
             </div>
 
-            <!-- ระบบคำนวณงบประมาณรายวัน (เพิ่มใหม่) -->
             <h2 class="font-bold text-gray-700 text-sm mb-3 flex items-center"><span class="text-xl mr-2">📅</span> การจัดสรรงบรายวัน</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 p-4 mb-6">
                 <label class="text-sm text-gray-600 font-medium mb-2 block">จำนวนวันที่ต้องการใช้เงินก้อนนี้ให้รอด</label>
@@ -185,7 +185,6 @@
                     <input type="number" id="planDays" min="1" placeholder="เช่น 5, 7, 30" class="w-2/3 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-center font-bold text-lg">
                     <button onclick="calculateDailyBudget()" class="w-1/3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md">คำนวณ</button>
                 </div>
-                <!-- ผลลัพธ์การคำนวณรายวัน -->
                 <div id="dailyBudgetResult" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 text-center animate-fade-in mt-3">
                     <p class="text-xs text-blue-600 font-semibold mb-1">คุณสามารถใช้จ่ายได้สูงสุด</p>
                     <h3 class="text-3xl font-extrabold text-blue-800 mb-2" id="dailyAmount">0 ฿ <span class="text-sm font-normal text-blue-600">/ วัน</span></h3>
@@ -197,7 +196,6 @@
                 </div>
             </div>
 
-            <!-- ตาราง 50/30/20 -->
             <h2 class="font-bold text-gray-700 text-sm mb-3">เป้าหมายแบ่งตามยอดคงเหลือรวม (50/30/20)</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden mb-6">
                 <div class="flex border-b border-gray-100">
@@ -232,7 +230,7 @@
                 <span class="mt-1">บันทึก</span>
             </button>
             <button onclick="showTab('plan')" class="flex flex-col items-center p-2 w-1/3 rounded-xl transition" id="nav-plan">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> วางแผน
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> วางแผน
             </button>
         </div>
     </div>
@@ -245,8 +243,6 @@
         let expenseChartObj = null;
         let trendChartObj = null;
         let currentUser = null; 
-        
-        // ตัวแปรเก็บเงินคงเหลือ สำหรับใช้ในฟังก์ชันคำนวณงบรายวัน
         window.currentBalance = 0; 
 
         window.onload = function() {
@@ -294,7 +290,7 @@
                 } else {
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
         }
 
         function handleLogin() {
@@ -388,15 +384,12 @@
             });
         }
 
-        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI (แสดงเศษส่วน) ---
         function showShiInfo() {
             Swal.fire({
                 title: 'ดัชนีสุขภาพการเงิน (SHI)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p><b>SHI (Sufficiency Health Index)</b> คือคะแนนประเมินพฤติกรรมทางการเงินตามหลักเศรษฐกิจพอเพียง (เต็ม 100 คะแนน) คำนวณจากสมการ:</p>
-                        
-                        <!-- กล่องแสดงสมการแบบเศษส่วน -->
                         <div class="bg-gray-100 py-4 px-2 rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm overflow-x-auto whitespace-nowrap shadow-inner border border-gray-200">
                             <span>SHI = 50 + 100</span>
                             <div class="inline-flex flex-col items-center mx-1.5 align-middle text-xs transform -translate-y-0.5">
@@ -415,8 +408,6 @@
                             </div>
                             <span>- 0.5|)</span>
                         </div>
-
-                        <!-- คำอธิบายตัวแปร (ปรับให้เป็นเศษส่วนด้วย) -->
                         <ul class="list-disc pl-5 space-y-2 text-xs mt-3">
                             <li>
                                 <b><span class="text-green-600">
@@ -460,15 +451,12 @@
             });
         }
 
-        // --- อัปเดต: หน้าต่างอธิบาย พยากรณ์เงินหมด (Burn Rate) แสดงเป็นเศษส่วน ---
         function showBurnRateInfo() {
             Swal.fire({
                 title: 'พยากรณ์เงินหมด (Burn Rate)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p>ระบบ <b>AI คำนวณความเสี่ยง</b> จะพยากรณ์ว่า <i>"เงินคงเหลือของคุณจะหมดภายในกี่วัน"</i> โดยใช้สมการเชิงเส้น:</p>
-                        
-                        <!-- กล่องสมการแบบเศษส่วน -->
                         <div class="bg-gray-100 py-4 px-2 rounded-lg flex items-center justify-center text-blue-600 font-bold text-base shadow-inner border border-gray-200">
                             <span>x = </span>
                             <div class="inline-flex flex-col items-center mx-2 align-middle text-sm transform -translate-y-0.5">
@@ -476,7 +464,6 @@
                                 <span class="px-2 leading-none pt-1">m</span>
                             </div>
                         </div>
-
                         <ul class="list-disc pl-5 space-y-1 mt-2">
                             <li><b>x (จำนวนวัน):</b> เวลาที่คาดว่าเงินจะหมด</li>
                             <li><b>c (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
@@ -490,15 +477,12 @@
             });
         }
 
-        // --- อัปเดต: หน้าต่างอธิบาย จุดตัดวิกฤต (Intersection) แสดงระบบสมการเต็มรูปแบบ ---
         function showIntersectInfo() {
             Swal.fire({
                 title: 'จุดวิกฤต (Deficit Intersection)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p>ระบบใช้ความรู้เรื่อง <b>ระบบสมการเชิงเส้นสองตัวแปร</b> เพื่อหาจุดที่กราฟรายจ่ายจะพุ่งขึ้นมาตัดกับกราฟรายรับ (จุดวิกฤต) โดยกำหนดให้:</p>
-                        
-                        <!-- กล่องระบบสมการแบบเศษส่วน -->
                         <div class="bg-gray-100 py-3 px-2 rounded-lg flex flex-col items-center justify-center text-blue-600 font-bold text-sm shadow-inner border border-gray-200 space-y-1.5">
                             <div>y₁ = m₁x + c₁ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายรับ)</span></div>
                             <div>y₂ = m₂x + c₂ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายจ่าย)</span></div>
@@ -512,7 +496,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <ul class="list-disc pl-5 space-y-1 mt-2 text-xs">
                             <li><b>m₁, m₂:</b> อัตราการเปลี่ยนแปลง (ความชัน) ของรายรับและรายจ่ายเฉลี่ยต่อวัน</li>
                             <li><b>c₁, c₂:</b> ยอดเงินตั้งต้น (จุดตัดแกน Y)</li>
@@ -632,7 +615,7 @@
             setTimeout(loadDashboardData, 500);
         }
 
-        // --- โหลดข้อมูล และ คำนวณ AI ---
+        // --- โหลดข้อมูล และ คำนวณ AI (รวมระบบเช็คการลืมบันทึก + สถิติต่อเนื่อง) ---
         function loadDashboardData() {
             const histDiv = document.getElementById('historyData');
             fetch(API_URL).then(res => res.json()).then(data => {
@@ -685,15 +668,76 @@
                 let balance = totalIncome - totalExpense - totalSavings;
                 
                 calculateAI_Insights(dailyStats, totalIncome, totalExpense, totalSavings, totalNeeds, totalWants, balance);
-
                 updateExpensePie(totalNeeds, totalWants, totalSavings);
                 updateTrendLine(dailyStats);
                 updateBudgetTable(balance);
+                
+                // --- ฟังก์ชันใหม่: เช็คการลืมบันทึกและคำนวณสถิติต่อเนื่อง ---
+                checkReminderAndStreak(myData);
 
             }).catch(e => {
                 histDiv.innerHTML = '<p class="text-center text-red-500 mt-10">เชื่อมต่อล้มเหลว</p>';
                 document.getElementById('refreshIcon').classList.remove('animate-spin');
             });
+        }
+
+        // --- ระบบแจ้งเตือนกันลืม + สถิติต่อเนื่อง (Nudge & Gamification) ---
+        function checkReminderAndStreak(myData) {
+            if (!myData || myData.length === 0) return;
+
+            // ดึงวันที่ทั้งหมดที่ไม่ซ้ำกัน (เรียงจากใหม่ไปเก่า)
+            let dates = [...new Set(myData.map(item => {
+                return new Date(item.timestamp).toISOString().split('T')[0];
+            }))].sort((a, b) => new Date(b) - new Date(a)); 
+
+            let today = new Date();
+            today.setHours(0,0,0,0);
+            let todayStr = today.toISOString().split('T')[0];
+
+            let yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            let yesterdayStr = yesterday.toISOString().split('T')[0];
+
+            let lastRecordStr = dates[0]; 
+
+            // 1. ระบบสะกิดเตือน (ถ้าล่าสุดไม่ใช่วันนี้และไม่ใช่วันนี้ ให้แจ้งเตือน 1 ครั้งต่อการเข้าระบบ)
+            if (lastRecordStr !== todayStr && lastRecordStr !== yesterdayStr) {
+                if (!sessionStorage.getItem('hasShownReminder')) {
+                    Swal.fire({
+                        title: 'ลืมบันทึกหรือเปล่า? 🤔',
+                        text: 'คุณไม่ได้บันทึกรายรับ-รายจ่ายมาสักพักแล้วนะ แวะมาอัปเดตข้อมูลให้ AI วิเคราะห์กันหน่อย!',
+                        icon: 'question',
+                        confirmButtonText: 'ไปบันทึกเลย!',
+                        confirmButtonColor: '#10B981',
+                        showCancelButton: true,
+                        cancelButtonText: 'ไว้ทีหลัง'
+                    }).then((result) => {
+                        if (result.isConfirmed) showTab('record');
+                    });
+                    sessionStorage.setItem('hasShownReminder', 'true');
+                }
+            }
+
+            // 2. ระบบคำนวณสถิติต่อเนื่อง (Daily Streak)
+            let streak = 0;
+            let checkDate = new Date(today);
+            
+            // ถ้าวันนี้ยังไม่ได้บันทึก ให้เริ่มนับย้อนจากเมื่อวาน
+            if (dates.indexOf(todayStr) === -1) {
+                 checkDate = yesterday;
+            }
+
+            while (true) {
+                let dStr = checkDate.toISOString().split('T')[0];
+                if (dates.includes(dStr)) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1); // ย้อนกลับไป 1 วัน
+                } else {
+                    break; // ถ้าระยะห่างขาดหายไป ให้หยุดนับ
+                }
+            }
+
+            document.getElementById('displayStreak').innerText = `🔥 บันทึกต่อเนื่อง: ${streak} วัน`;
         }
 
         function calculateAI_Insights(dailyStats, totalIn, totalOut, totalSave, totalNeed, totalWant, balance) {
