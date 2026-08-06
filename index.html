@@ -13,6 +13,9 @@
         .animate-fade-in { animation: fadeIn 0.4s ease-in-out; }
         .gradient-ai { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ซ่อน scrollbar แต่ยังเลื่อนได้ */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -55,12 +58,11 @@
     <!-- 3. หน้าแอปหลัก (Main App) -->
     <div id="mainApp" class="hidden max-w-md mx-auto bg-white min-h-screen shadow-lg pb-24 relative overflow-x-hidden">
         
-        <!-- Header (มี Badge แสดงสถิติต่อเนื่อง) -->
+        <!-- Header -->
         <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-5 rounded-b-3xl shadow-md flex justify-between items-start">
             <div>
                 <h1 class="text-xl font-bold tracking-wide mt-1">พอ-ดี-พอร์ต</h1>
                 <p class="text-xs mt-1 text-green-100" id="displayUser">ผู้ใช้งาน: ...</p>
-                <!-- ป้ายแสดง Streak -->
                 <p class="text-[10px] bg-white/20 inline-block px-2.5 py-0.5 rounded-full mt-1.5 shadow-sm font-semibold border border-white/30" id="displayStreak">🔥 บันทึกต่อเนื่อง: 0 วัน</p>
             </div>
             <div class="flex flex-col items-end gap-1">
@@ -84,7 +86,6 @@
                 <h2 class="font-bold text-sm mb-3 flex items-center"><span class="text-xl mr-2">✨</span> AI Smart Insights</h2>
                 <div class="space-y-3 relative z-10">
                     
-                    <!-- กล่อง SHI -->
                     <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
                         <div class="flex justify-between items-center mb-1">
                             <p class="text-xs text-blue-100">ดัชนีสุขภาพการเงิน (SHI)</p>
@@ -99,7 +100,6 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <!-- กล่อง Burn Rate -->
                         <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
                             <div class="flex justify-between items-center mb-1">
                                 <p class="text-xs text-blue-100">พยากรณ์เงินหมด</p>
@@ -109,8 +109,6 @@
                             </div>
                             <h3 class="text-sm font-bold" id="aiBurnRate">กำลังคำนวณ...</h3>
                         </div>
-                        
-                        <!-- กล่อง Intersection -->
                         <div class="w-1/2 bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
                             <div class="flex justify-between items-center mb-1">
                                 <p class="text-xs text-blue-100">จุดตัดวิกฤต</p>
@@ -124,13 +122,11 @@
                 </div>
             </div>
 
-            <!-- กราฟแนวโน้ม -->
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 mb-5 border border-gray-100">
                 <h2 class="font-bold text-gray-700 text-center mb-1 text-sm">แนวโน้มการเงินสะสม (รายวัน)</h2>
                 <div class="relative h-48 w-full"><canvas id="trendChart"></canvas></div>
             </div>
 
-            <!-- กราฟวงกลม -->
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 mb-5 border border-gray-100 flex items-center">
                 <div class="w-1/2 relative h-32"><canvas id="expenseChart"></canvas></div>
                 <div class="w-1/2 pl-4 text-xs space-y-2">
@@ -140,11 +136,11 @@
                 </div>
             </div>
 
-            <!-- ประวัติล่าสุด -->
+            <!-- ส่วนประวัติล่าสุด แบบกลุ่มรายวัน -->
             <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-gray-700 text-sm">ประวัติล่าสุด</h2>
+                <h2 class="font-bold text-gray-700 text-sm">ประวัติล่าสุด (สรุปรายวัน)</h2>
             </div>
-            <div id="historyData" class="text-sm bg-gray-50 p-3 rounded-2xl border border-gray-100 h-64 overflow-y-auto"></div>
+            <div id="historyData" class="text-sm bg-gray-50 p-2 rounded-2xl border border-gray-100 h-72 overflow-y-auto no-scrollbar relative"></div>
         </div>
 
         <!-- แท็บ 2: บันทึกรายการ -->
@@ -179,14 +175,12 @@
 
         <!-- แท็บ 3: หน้าวางแผน -->
         <div id="tab-plan" class="hidden p-5 animate-fade-in">
-            <!-- ยอดเงินคงเหลือ -->
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-5 rounded-2xl shadow-lg mb-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 opacity-10 text-6xl transform translate-x-4 -translate-y-4">💰</div>
                 <p class="text-sm text-gray-300 font-medium">ยอดเงินคงเหลือสามารถใช้ได้</p>
                 <h2 class="text-4xl font-bold mt-1" id="currentBalance">0 <span class="text-xl font-normal">฿</span></h2>
             </div>
 
-            <!-- คำนวณงบรายวัน -->
             <h2 class="font-bold text-gray-700 text-sm mb-3 flex items-center"><span class="text-xl mr-2">📅</span> การจัดสรรงบรายวัน</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 p-4 mb-6">
                 <label class="text-sm text-gray-600 font-medium mb-2 block">จำนวนวันที่ต้องการใช้เงินก้อนนี้ให้รอด</label>
@@ -205,7 +199,6 @@
                 </div>
             </div>
 
-            <!-- ตาราง 50/30/20 -->
             <h2 class="font-bold text-gray-700 text-sm mb-3">เป้าหมายแบ่งตามยอดคงเหลือรวม (50/30/20)</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden mb-6">
                 <div class="flex border-b border-gray-100">
@@ -224,7 +217,6 @@
                 </div>
             </div>
 
-            <!-- ตะกร้าชะลอความอยาก -->
             <h2 class="font-bold text-gray-700 text-sm flex items-center mb-3"><span class="text-xl mr-2">🛒</span> ตะกร้าชะลอความอยาก (7 วัน)</h2>
             <div id="wishlistContainer" class="space-y-3"></div>
         </div>
@@ -241,7 +233,7 @@
                 <span class="mt-1">บันทึก</span>
             </button>
             <button onclick="showTab('plan')" class="flex flex-col items-center p-2 w-1/3 rounded-xl transition" id="nav-plan">
-                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> วางแผน
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> วางแผน
             </button>
         </div>
     </div>
@@ -301,7 +293,7 @@
                 } else {
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
         }
 
         function handleLogin() {
@@ -395,14 +387,12 @@
             });
         }
 
-        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI (อัปเดตเศษส่วน) ---
         function showShiInfo() {
             Swal.fire({
                 title: 'ดัชนีสุขภาพการเงิน (SHI)',
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p><b>SHI (Sufficiency Health Index)</b> คือคะแนนประเมินพฤติกรรมทางการเงินตามหลักเศรษฐกิจพอเพียง (เต็ม 100 คะแนน) คำนวณจากสมการ:</p>
-                        
                         <div class="bg-gray-100 py-4 px-2 rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm overflow-x-auto whitespace-nowrap shadow-inner border border-gray-200">
                             <span>SHI = 50 + 100</span>
                             <div class="inline-flex flex-col items-center mx-1.5 align-middle text-xs transform -translate-y-0.5">
@@ -421,7 +411,6 @@
                             </div>
                             <span>- 0.5|)</span>
                         </div>
-
                         <ul class="list-disc pl-5 space-y-2 text-xs mt-3">
                             <li>
                                 <b><span class="text-green-600">
@@ -471,7 +460,6 @@
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p>ระบบ <b>AI คำนวณความเสี่ยง</b> จะพยากรณ์ว่า <i>"เงินคงเหลือของคุณจะหมดภายในกี่วัน"</i> โดยใช้สมการเชิงเส้น:</p>
-                        
                         <div class="bg-gray-100 py-4 px-2 rounded-lg flex items-center justify-center text-blue-600 font-bold text-base shadow-inner border border-gray-200">
                             <span>x = </span>
                             <div class="inline-flex flex-col items-center mx-2 align-middle text-sm transform -translate-y-0.5">
@@ -479,7 +467,6 @@
                                 <span class="px-2 leading-none pt-1">m</span>
                             </div>
                         </div>
-
                         <ul class="list-disc pl-5 space-y-1 mt-2">
                             <li><b>x (จำนวนวัน):</b> เวลาที่คาดว่าเงินจะหมด</li>
                             <li><b>c (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
@@ -499,7 +486,6 @@
                 html: `
                     <div class="text-left text-sm space-y-3 text-gray-700">
                         <p>ระบบใช้ความรู้เรื่อง <b>ระบบสมการเชิงเส้นสองตัวแปร</b> เพื่อหาจุดที่กราฟรายจ่ายจะพุ่งขึ้นมาตัดกับกราฟรายรับ (จุดวิกฤต) โดยกำหนดให้:</p>
-                        
                         <div class="bg-gray-100 py-3 px-2 rounded-lg flex flex-col items-center justify-center text-blue-600 font-bold text-sm shadow-inner border border-gray-200 space-y-1.5">
                             <div>y₁ = m₁x + c₁ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายรับ)</span></div>
                             <div>y₂ = m₂x + c₂ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายจ่าย)</span></div>
@@ -513,7 +499,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <ul class="list-disc pl-5 space-y-1 mt-2 text-xs">
                             <li><b>m₁, m₂:</b> อัตราการเปลี่ยนแปลง (ความชัน) ของรายรับและรายจ่ายเฉลี่ยต่อวัน</li>
                             <li><b>c₁, c₂:</b> ยอดเงินตั้งต้น (จุดตัดแกน Y)</li>
@@ -633,22 +618,25 @@
             setTimeout(loadDashboardData, 500);
         }
 
-        // --- โหลดข้อมูล และ คำนวณ AI (รวมระบบเช็คการลืมบันทึก + สถิติต่อเนื่อง) ---
+        // --- โหลดข้อมูล และจัดกลุ่มสรุปรายวัน ---
         function loadDashboardData() {
             const histDiv = document.getElementById('historyData');
             fetch(API_URL).then(res => res.json()).then(data => {
                 let myData = data.filter(item => item.user === currentUser);
-                let html = '<ul class="space-y-3">';
                 let totalNeeds = 0, totalWants = 0, totalSavings = 0;
                 let totalIncome = 0, totalExpense = 0;
-                let dailyStats = {};
+                let dailyStats = {}; // สำหรับกราฟและการคำนวณ AI (เรียงเก่าไปใหม่)
 
-                if(myData.length === 0) histDiv.innerHTML = '<p class="text-center text-gray-400 mt-10">ยังไม่มีข้อมูล</p>';
+                if(myData.length === 0) {
+                    histDiv.innerHTML = '<p class="text-center text-gray-400 mt-10">ยังไม่มีข้อมูล</p>';
+                    document.getElementById('refreshIcon').classList.remove('animate-spin');
+                    updateBudgetTable(0);
+                    return;
+                }
 
-                myData.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-                for(let i = myData.length - 1; i >= 0; i--) {
-                    let item = myData[i];
+                // 1. คำนวณยอดรวมทั้งหมด และ dailyStats สำหรับกราฟ (เก่าไปใหม่)
+                let graphData = [...myData].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+                graphData.forEach(item => {
                     let amt = parseFloat(item.amount);
                     let rawDate = new Date(item.timestamp);
                     let dateKey = rawDate.toLocaleDateString('th-TH', {day:'numeric', month:'short'});
@@ -662,25 +650,73 @@
                         if(item.category.startsWith('Want')) totalWants += amt;
                     } 
                     else if (item.type === 'savings') { totalSavings += amt; dailyStats[dateKey].save += amt; }
+                });
 
-                    let cText = item.category.replace(/Need-|Want-|Save-/g, '');
-                    let cColor = item.type === 'income' ? 'text-green-600' : (item.type === 'savings' ? 'text-blue-500' : (item.category.startsWith('Want') ? 'text-red-500' : 'text-gray-800'));
-                    let sign = item.type === 'income' ? '+' : '-';
+                // 2. จัดกลุ่มข้อมูลสำหรับประวัติแบบ "สรุปรายวัน" (ใหม่ไปเก่า)
+                let historySort = [...myData].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                let groupedHistory = {};
+                let sortedKeys = [];
+
+                historySort.forEach(item => {
+                    let rawDate = new Date(item.timestamp);
+                    let fullDateKey = rawDate.toLocaleDateString('th-TH', {day:'numeric', month:'short', year:'numeric'});
                     
+                    if(!groupedHistory[fullDateKey]) {
+                        groupedHistory[fullDateKey] = { items: [], in: 0, out: 0, save: 0 };
+                        sortedKeys.push(fullDateKey); // เก็บ key ไว้เรียงลำดับ
+                    }
+                    
+                    let amt = parseFloat(item.amount);
+                    groupedHistory[fullDateKey].items.push(item);
+                    
+                    if(item.type === 'income') groupedHistory[fullDateKey].in += amt;
+                    else if(item.type === 'expense') groupedHistory[fullDateKey].out += amt;
+                    else if(item.type === 'savings') groupedHistory[fullDateKey].save += amt;
+                });
+
+                // 3. สร้าง HTML สำหรับประวัติแบบจัดกลุ่ม
+                let html = '';
+                sortedKeys.forEach(dateKey => {
+                    let day = groupedHistory[dateKey];
+                    
+                    // หัวข้อสรุปของแต่ละวัน (Sticky Header)
                     html += `
-                    <li class="bg-white p-3.5 rounded-xl border border-gray-100 flex flex-col shadow-sm">
-                        <div class="flex justify-between items-start mb-2">
-                            <div><p class="font-bold text-sm text-gray-700">${cText}</p><p class="text-xs text-gray-400">${dateKey} • ${item.note}</p></div>
-                            <div class="${cColor} font-bold text-base text-right">${sign}${amt} ฿</div>
+                    <div class="sticky top-0 bg-gray-50/95 backdrop-blur-sm p-2 rounded-lg mt-4 mb-2 flex justify-between items-center text-[11px] font-bold text-gray-700 z-10 border border-gray-200 shadow-sm">
+                        <div class="flex items-center text-gray-600"><span class="mr-1 text-sm">📅</span> ${dateKey}</div>
+                        <div class="flex gap-2">
+                            ${day.in > 0 ? `<span class="text-green-600">รับ: +${day.in}</span>` : `<span class="text-gray-400">รับ: 0</span>`}
+                            ${day.out > 0 ? `<span class="text-red-500">จ่าย: -${day.out}</span>` : `<span class="text-gray-400">จ่าย: 0</span>`}
+                            ${day.save > 0 ? `<span class="text-blue-600">ออม: +${day.save}</span>` : `<span class="text-gray-400">ออม: 0</span>`}
                         </div>
-                        <div class="flex justify-end space-x-4 pt-2.5 border-t border-gray-50">
-                            <button onclick="editRecord(${item.rowId}, '${rawDate.toISOString()}', ${amt}, '${item.note}')" class="text-xs text-blue-500 hover:text-blue-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                            <button onclick="deleteRecord(${item.rowId})" class="text-xs text-red-500 hover:text-red-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                        </div>
-                    </li>`;
-                }
+                    </div>
+                    <ul class="space-y-2.5 mb-2 relative before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">`;
+
+                    // รายการธุรกรรมในวันนั้น
+                    day.items.forEach(item => {
+                        let amt = parseFloat(item.amount);
+                        let rawDate = new Date(item.timestamp);
+                        let cText = item.category.replace(/Need-|Want-|Save-/g, '');
+                        let cColor = item.type === 'income' ? 'text-green-600' : (item.type === 'savings' ? 'text-blue-500' : (item.category.startsWith('Want') ? 'text-red-500' : 'text-gray-800'));
+                        let sign = item.type === 'income' ? '+' : '-';
+                        let borderSideColor = item.type === 'income' ? 'border-l-green-400' : (item.type === 'expense' ? 'border-l-red-400' : 'border-l-blue-400');
+                        
+                        html += `
+                        <li class="bg-white p-3.5 rounded-xl border border-gray-100 flex flex-col shadow-sm ml-5 relative before:content-[''] before:absolute before:-left-2.5 before:top-1/2 before:w-2.5 before:h-px before:bg-gray-200 border-l-4 ${borderSideColor}">
+                            <div class="flex justify-between items-start mb-2">
+                                <div><p class="font-bold text-sm text-gray-700">${cText}</p><p class="text-xs text-gray-400">${item.note}</p></div>
+                                <div class="${cColor} font-bold text-base text-right">${sign}${amt} ฿</div>
+                            </div>
+                            <div class="flex justify-end space-x-4 pt-2.5 border-t border-gray-50">
+                                <button onclick="editRecord(${item.rowId}, '${rawDate.toISOString()}', ${amt}, '${item.note}')" class="text-xs text-blue-500 hover:text-blue-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                                <button onclick="deleteRecord(${item.rowId})" class="text-xs text-red-500 hover:text-red-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                            </div>
+                        </li>`;
+                    });
+                    
+                    html += `</ul>`;
+                });
                 
-                if(myData.length > 0) histDiv.innerHTML = html;
+                histDiv.innerHTML = html;
                 document.getElementById('refreshIcon').classList.remove('animate-spin');
 
                 let balance = totalIncome - totalExpense - totalSavings;
@@ -690,7 +726,6 @@
                 updateTrendLine(dailyStats);
                 updateBudgetTable(balance);
                 
-                // --- ฟังก์ชันเช็คการลืมบันทึกและคำนวณสถิติต่อเนื่อง ---
                 checkReminderAndStreak(myData);
 
             }).catch(e => {
@@ -701,7 +736,6 @@
 
         // --- ระบบแจ้งเตือนกันลืม + สถิติต่อเนื่อง (Nudge & Gamification) ---
         function checkReminderAndStreak(myData) {
-            // ดึงเวลาปัจจุบัน (Local Time ประเทศไทย) เพื่อไม่ให้วันคลาดเคลื่อน
             let today = new Date();
             let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             
@@ -711,7 +745,6 @@
 
             let streak = 0;
 
-            // 1. กรณีไม่มีข้อมูลเลย (ผู้ใช้ใหม่)
             if (!myData || myData.length === 0) {
                 if (!sessionStorage.getItem('hasShownReminder')) {
                     Swal.fire({
@@ -731,7 +764,6 @@
                 return;
             }
 
-            // 2. กรณีมีข้อมูล ดึงวันที่ทั้งหมดที่ไม่ซ้ำกัน
             let dates = [...new Set(myData.map(item => {
                 let d = new Date(item.timestamp);
                 return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -739,8 +771,6 @@
 
             let lastRecordStr = dates[0]; 
 
-            // --- ระบบสะกิดเตือน ---
-            // ถ้าข้อมูลล่าสุด ไม่ใช่วันนี้ ให้เตือน 1 ครั้งต่อการเข้าระบบ
             if (lastRecordStr !== todayStr) {
                 if (!sessionStorage.getItem('hasShownReminder')) {
                     Swal.fire({
@@ -754,14 +784,11 @@
                     }).then((result) => {
                         if (result.isConfirmed) showTab('record');
                     });
-                    sessionStorage.setItem('hasShownReminder', 'true'); // บันทึกไว้ว่าเตือนไปแล้วในรอบนี้
+                    sessionStorage.setItem('hasShownReminder', 'true');
                 }
             }
 
-            // --- ระบบคำนวณสถิติต่อเนื่อง (Daily Streak) ---
             let checkDate = new Date(today);
-            
-            // ถ้าวันนี้ยังไม่ได้บันทึก ให้เริ่มนับย้อนสถิติจากเมื่อวาน
             if (!dates.includes(todayStr)) {
                  checkDate = yesterday;
             }
@@ -770,9 +797,9 @@
                 let dStr = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
                 if (dates.includes(dStr)) {
                     streak++;
-                    checkDate.setDate(checkDate.getDate() - 1); // ย้อนกลับไปเช็ควันก่อนหน้า
+                    checkDate.setDate(checkDate.getDate() - 1);
                 } else {
-                    break; // ถ้าระยะห่างขาดหายไป ให้หยุดนับสถิติ
+                    break;
                 }
             }
 
@@ -818,7 +845,6 @@
             }
         }
 
-        // --- ระบบคำนวณงบประมาณรายวัน ---
         function updateBudgetTable(balance) {
             window.currentBalance = balance; 
             document.getElementById('currentBalance').innerText = `${balance.toLocaleString()} ฿`;
@@ -853,7 +879,6 @@
             document.getElementById('dailyBudgetResult').classList.remove('hidden');
         }
 
-        // ตะกร้าชะลอความอยาก
         function addToWishlist(itemName, price) {
             let list = JSON.parse(localStorage.getItem(`wishlist_${currentUser}`)) || [];
             let unlockDate = new Date(); unlockDate.setDate(unlockDate.getDate() + 7); 
