@@ -182,7 +182,6 @@
                 </div>
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">จำนวนเงิน (บาท)</label>
-                    <!-- อัปเดต: เปลี่ยนเป็น text เพื่อดักจับคอมม่าแบบ real-time -->
                     <input type="text" id="amount" required placeholder="0.00" oninput="formatNumberInput(this)" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 text-xl font-bold outline-none bg-gray-50">
                 </div>
                 <div>
@@ -265,20 +264,17 @@
         
         const fmt = (num) => parseFloat(num || 0).toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2});
 
-        // --- ฟังก์ชันดักจับการพิมพ์เพื่อใส่ลูกน้ำ (Comma) อัตโนมัติ ---
         function formatNumberInput(input) {
-            let value = input.value.replace(/,/g, ''); // เอาคอมม่าออกก่อน
+            let value = input.value.replace(/,/g, ''); 
             if(isNaN(value) || value === '') {
                 input.value = value;
                 return;
             }
-            // จัดรูปแบบใหม่แล้วใส่กลับเข้าไป
             let parts = value.split('.');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             input.value = parts.join('.');
         }
 
-        // ฟังก์ชันแปลงกลับเป็นตัวเลขเพียวๆ เพื่อส่งเข้าฐานข้อมูล
         function getRawNumber(value) {
             return parseFloat(value.replace(/,/g, '')) || 0;
         }
@@ -310,7 +306,6 @@
             loadDashboardData();
         }
 
-        // --- ระบบ Auth และ PDPA ---
         function toggleAuthScreen(screen) {
             if (screen === 'register') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -372,7 +367,7 @@
                 } else {
                     Swal.fire('ผิดพลาด', result.message, 'error');
                 }
-            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง (อย่าลืมกด New Deployment)', 'error'));
+            }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
 
         function handleLogin() {
@@ -430,7 +425,6 @@
             });
         }
 
-        // --- ระบบ Leaderboard จัดอันดับ ---
         function showLeaderboard() {
             Swal.fire({ title: 'กำลังโหลดข้อมูลจัดอันดับ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
             
@@ -470,21 +464,34 @@
 
                 leaderboard.sort((a,b) => b.score - a.score);
 
+                let currentRank = 0;
+                let previousScore = null;
+
+                leaderboard.forEach((item) => {
+                    if (item.score !== previousScore) {
+                        currentRank++;
+                    }
+                    item.rank = currentRank;
+                    previousScore = item.score;
+                });
+
                 let html = '<div class="space-y-3 mt-4">';
                 if(leaderboard.length === 0) {
                     html += '<p class="text-sm text-gray-500 py-4">ยังไม่มีข้อมูลเพียงพอสำหรับการจัดอันดับ</p>';
                 } else {
-                    leaderboard.slice(0, 5).forEach((rank, index) => { 
-                        let medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `<span class="text-sm text-gray-400 font-bold">${index+1}</span>`));
-                        let isMe = rank.user === currentUser ? 'bg-green-50 border-green-200 shadow-md transform scale-[1.02] transition' : 'bg-gray-50 border-gray-100';
+                    let top5List = leaderboard.filter(item => item.rank <= 5);
+                    
+                    top5List.slice(0, 8).forEach((item) => { 
+                        let medal = item.rank === 1 ? '🥇' : (item.rank === 2 ? '🥈' : (item.rank === 3 ? '🥉' : `<span class="text-sm text-gray-400 font-bold">${item.rank}</span>`));
+                        let isMe = item.user === currentUser ? 'bg-green-50 border-green-200 shadow-md transform scale-[1.02] transition' : 'bg-gray-50 border-gray-100';
                         
                         html += `
                             <div class="flex justify-between items-center p-3.5 rounded-xl border ${isMe}">
                                 <div class="flex items-center gap-3">
                                     <span class="text-2xl w-8 text-center">${medal}</span>
-                                    <span class="font-bold text-gray-700 text-sm ${rank.user === currentUser ? 'text-green-700' : ''}">${rank.user} ${rank.user === currentUser ? '<span class="text-[10px] bg-green-200 text-green-800 px-1.5 py-0.5 rounded ml-1">ฉันเอง</span>' : ''}</span>
+                                    <span class="font-bold text-gray-700 text-sm ${item.user === currentUser ? 'text-green-700' : ''}">${item.user} ${item.user === currentUser ? '<span class="text-[10px] bg-green-200 text-green-800 px-1.5 py-0.5 rounded ml-1">ฉันเอง</span>' : ''}</span>
                                 </div>
-                                <div class="font-bold text-xl text-blue-600">${fmt(rank.score)} <span class="text-[10px] font-normal text-gray-500">SHI</span></div>
+                                <div class="font-bold text-xl text-blue-600">${fmt(item.score)} <span class="text-[10px] font-normal text-gray-500">SHI</span></div>
                             </div>
                         `;
                     });
@@ -540,7 +547,6 @@
             });
         }
 
-        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI ---
         function showShiInfo() {
             Swal.fire({
                 title: 'ดัชนีสุขภาพการเงิน (SHI)',
@@ -681,7 +687,6 @@
 
         function logout() { localStorage.removeItem('activeUser'); location.reload(); }
 
-        // --- ระบบแสดงผล UI ต่างๆ ---
         function showTab(tabName) {
             ['dashboard', 'record', 'plan'].forEach(tab => {
                 document.getElementById('tab-' + tab).classList.add('hidden');
@@ -718,7 +723,6 @@
             const type = document.getElementById('txType').value;
             const category = document.getElementById('category').value;
             
-            // ดึงค่าตัวเลขจริงๆ (ถอดคอมม่าออก) ไปคำนวณและบันทึก
             const amountStr = document.getElementById('amount').value;
             const amount = getRawNumber(amountStr);
             if(amount <= 0) return Swal.fire('ผิดพลาด', 'จำนวนเงินต้องมากกว่า 0', 'error');
@@ -745,7 +749,6 @@
             .then((result) => { if (result.isConfirmed) processApiAction({ action: 'delete', rowId: rowId }, 'กำลังลบ...'); })
         }
 
-        // หน้าต่าง Edit รายการ (ดักจับคอมม่าด้วย)
         async function editRecord(rowId, oldDate, oldAmount, oldNote) {
             let dt = new Date(oldDate); let formattedDate = dt.toISOString().split('T')[0];
             const { value: formValues } = await Swal.fire({
@@ -777,7 +780,7 @@
                 Swal.fire('สำเร็จ!', 'อัปเดตข้อมูลเรียบร้อย', 'success');
                 if(payload.action === 'add') {
                     document.getElementById('recordForm').reset();
-                    setTxType(document.getElementById('txType').value); // รีเซ็ตฟอร์มแล้วตั้งกลับไป Type เดิม
+                    setTxType(document.getElementById('txType').value);
                 }
                 loadDashboardData(); 
             }).catch(error => Swal.fire('ผิดพลาด', 'เชื่อมต่อขัดข้อง', 'error'));
@@ -788,13 +791,11 @@
             setTimeout(loadDashboardData, 500);
         }
 
-        // --- โหลดข้อมูล (กรองรายเดือน + จัดกลุ่มรายวัน) ---
         function loadDashboardData() {
             const histDiv = document.getElementById('historyData');
             fetch(API_URL).then(res => res.json()).then(data => {
                 let allMyData = data.filter(item => item.user === currentUser);
                 
-                // คำนวณยอดเงินสะสมทั้งหมด (Cumulative Balance)
                 let cumulativeIncome = 0, cumulativeExpense = 0, cumulativeSavings = 0;
                 allMyData.forEach(item => {
                     let a = parseFloat(item.amount) || 0;
@@ -804,7 +805,6 @@
                 });
                 let cumulativeBalance = cumulativeIncome - cumulativeExpense - cumulativeSavings;
 
-                // ตัวกรองเดือน
                 let mFilter = document.getElementById('monthFilter').value; 
                 let myData = allMyData;
                 if (mFilter) {
@@ -923,7 +923,6 @@
             });
         }
 
-        // --- ระบบแจ้งเตือนกันลืม + สถิติต่อเนื่อง ---
         function checkReminderAndStreak(myData) {
             let today = new Date();
             let todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
