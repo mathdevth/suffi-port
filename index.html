@@ -168,21 +168,21 @@
                 <input type="hidden" id="txType" value="income">
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">วันที่ทำรายการ</label>
-                    <input type="date" id="txDate" required class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-gray-50">
+                    <input type="date" id="txDate" required class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50">
                 </div>
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">หมวดหมู่</label>
-                    <select id="category" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-gray-50"></select>
+                    <select id="category" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50"></select>
                 </div>
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">จำนวนเงิน (บาท)</label>
-                    <input type="number" id="amount" required placeholder="0.00" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 text-xl font-bold outline-none bg-gray-50">
+                    <input type="number" id="amount" required placeholder="0.00" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 text-xl font-bold outline-none bg-gray-50">
                 </div>
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">บันทึกช่วยจำ</label>
-                    <input type="text" id="note" placeholder="เช่น ซื้อเครื่องเขียน" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-gray-50">
+                    <input type="text" id="note" placeholder="เช่น ซื้อเครื่องเขียน" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50">
                 </div>
-                <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition shadow-lg mt-2 text-lg">บันทึกลงระบบ</button>
+                <button type="submit" id="btnSubmitForm" class="w-full bg-teal-600 text-white font-bold py-4 rounded-xl hover:bg-teal-700 transition shadow-lg mt-2 text-lg">บันทึกลงระบบ</button>
             </form>
         </div>
 
@@ -240,7 +240,7 @@
                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> ภาพรวม
             </button>
             <button onclick="showTab('record')" class="flex flex-col items-center p-2 w-1/3 rounded-xl transition" id="nav-record">
-                <div class="bg-green-500 text-white rounded-full p-2 -mt-6 shadow-lg transform transition hover:scale-110">
+                <div class="bg-green-500 text-white rounded-full p-2 -mt-6 shadow-lg transform transition hover:scale-110" id="navIconRecordBg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 </div>
                 <span class="mt-1">บันทึก</span>
@@ -274,7 +274,6 @@
             }
         };
 
-        // --- ระบบ Auth ---
         function toggleAuthScreen(screen) {
             if (screen === 'register') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -330,7 +329,6 @@
             }).catch(e => Swal.fire('ผิดพลาด', 'เชื่อมต่อฐานข้อมูลขัดข้อง', 'error'));
         }
 
-        // --- ระบบแก้ชื่อไอดี และ เปลี่ยนรหัสผ่าน ---
         function openChangeUsernameModal() {
             Swal.fire({
                 title: 'แก้ไขชื่อผู้ใช้งาน',
@@ -452,7 +450,7 @@
             });
         }
 
-        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI (อัปเดตเศษส่วน) ---
+        // --- หน้าต่างอธิบาย ข้อมูลสมการ AI ---
         function showShiInfo() {
             Swal.fire({
                 title: 'ดัชนีสุขภาพการเงิน (SHI)',
@@ -582,7 +580,7 @@
             });
         }
 
-        // --- กระดานผู้นำ (Leaderboard) แบบ Dense Ranking (คะแนนเท่าได้อันดับเท่ากัน) ---
+        // --- กระดานผู้นำ (Leaderboard) แบบ Dense Ranking ---
         function showLeaderboard() {
             if (window.leaderboardData.length === 0) {
                 return Swal.fire('กำลังคำนวณ', 'ยังไม่มีข้อมูลผู้ใช้งานที่เพียงพอสำหรับการจัดอันดับ', 'info');
@@ -638,23 +636,39 @@
             document.getElementById('nav-' + tabName).classList.replace('text-gray-400', 'text-green-600');
         }
 
+        // --- ระบบโทนสี (Color Scheme) ---
         function setTxType(type) {
             document.getElementById('txType').value = type;
             const catSelect = document.getElementById('category');
             document.getElementById('txDate').valueAsDate = new Date();
+            
+            // รีเซ็ตปุ่ม
             ['btnIncome', 'btnExpense', 'btnSavings'].forEach(id => {
                 document.getElementById(id).className = "w-1/3 text-gray-500 py-2.5 rounded-lg font-bold transition-all text-sm hover:bg-gray-200";
             });
-            if(type === 'income') {
-                document.getElementById('btnIncome').className = "w-1/3 bg-white text-green-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
+            
+            // เปลี่ยนสีปุ่มบันทึกและสีฟอร์มให้ตรงกับประเภท
+            const formBtn = document.getElementById('btnSubmitForm');
+            const inputs = ['txDate', 'category', 'amount', 'note'];
+
+            if(type === 'income') { // รายรับ (Teal)
+                document.getElementById('btnIncome').className = "w-1/3 bg-white text-teal-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
+                formBtn.className = "w-full bg-teal-600 text-white font-bold py-4 rounded-xl hover:bg-teal-700 transition shadow-lg mt-2 text-lg";
+                inputs.forEach(id => { document.getElementById(id).className = `w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50 ${id === 'amount' ? 'text-xl font-bold' : ''}`; });
                 catSelect.innerHTML = `<option value="ค่าขนมประจำ">ค่าขนมรายวัน/เดือน</option><option value="รายได้พิเศษ">รายได้พิเศษ</option>`;
-            } else if (type === 'expense') {
+            
+            } else if (type === 'expense') { // รายจ่าย (Red)
                 document.getElementById('btnExpense').className = "w-1/3 bg-white text-red-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
+                formBtn.className = "w-full bg-red-600 text-white font-bold py-4 rounded-xl hover:bg-red-700 transition shadow-lg mt-2 text-lg";
+                inputs.forEach(id => { document.getElementById(id).className = `w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 outline-none bg-gray-50 ${id === 'amount' ? 'text-xl font-bold' : ''}`; });
                 catSelect.innerHTML = `
                     <optgroup label="✅ สิ่งจำเป็น (Needs)"><option value="Need-อาหาร">อาหารมื้อหลัก</option><option value="Need-การเรียน">อุปกรณ์การเรียน</option><option value="Need-เดินทาง">ค่าเดินทาง</option></optgroup>
                     <optgroup label="⚠️ ฟุ่มเฟือย (Wants)"><option value="Want-เกม/ของเล่น">เติมเกม / ของเล่น</option><option value="Want-ขนมจุกจิก">ขนมจุกจิก</option><option value="Want-แฟชั่น/อื่นๆ">แฟชั่น / อื่นๆ</option></optgroup>`;
-            } else if (type === 'savings') {
-                document.getElementById('btnSavings').className = "w-1/3 bg-white text-blue-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
+            
+            } else if (type === 'savings') { // เงินออม (Green)
+                document.getElementById('btnSavings').className = "w-1/3 bg-white text-green-600 py-2.5 rounded-lg font-bold shadow-md transition-all text-sm";
+                formBtn.className = "w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition shadow-lg mt-2 text-lg";
+                inputs.forEach(id => { document.getElementById(id).className = `w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none bg-gray-50 ${id === 'amount' ? 'text-xl font-bold' : ''}`; });
                 catSelect.innerHTML = `<option value="Save-กระปุก">หยอดกระปุกออมสิน</option><option value="Save-ธนาคาร">ฝากธนาคาร</option><option value="Save-ลงทุน">ลงทุน (หุ้น/กองทุน)</option>`;
             }
         }
@@ -725,12 +739,12 @@
             setTimeout(loadDashboardData, 500);
         }
 
-        // --- โหลดข้อมูล จัดกลุ่มประวัติ และคำนวณ Leaderboard แบบ Dense Ranking ---
+        // --- โหลดข้อมูล จัดกลุ่มประวัติ และจัดอันดับ Leaderboard ---
         function loadDashboardData() {
             const histDiv = document.getElementById('historyData');
             fetch(API_URL).then(res => res.json()).then(data => {
                 
-                // 1. กระบวนการคำนวณ Leaderboard รวมผู้ใช้ทุกคน
+                // 1. กระบวนการคำนวณ Leaderboard
                 let usersStats = {};
                 data.forEach(item => {
                     if (!item.user || item.user.trim() === '') return;
@@ -760,10 +774,8 @@
                     }
                 });
                 
-                // เรียงลำดับคะแนนจากมากไปน้อย
                 window.leaderboardData.sort((a, b) => b.score - a.score);
 
-                // 🌟 คำนวณอันดับแบบ Dense Ranking (คะแนนเท่ากันอันดับเดียวกัน)
                 let currentRank = 1;
                 window.leaderboardData.forEach((user, index) => {
                     if (index > 0 && user.score < window.leaderboardData[index - 1].score) {
@@ -772,7 +784,6 @@
                     user.rank = currentRank;
                 });
 
-                // อัปเดตป้าย Rank ของเรา
                 let myUserRank = window.leaderboardData.find(u => u.name === currentUser);
                 let rankBadge = document.getElementById('userRankBadge');
                 if (myUserRank) {
@@ -837,13 +848,14 @@
                 sortedKeys.forEach(dateKey => {
                     let day = groupedHistory[dateKey];
                     
+                    // หัวข้อประวัติยึดตาม Color Scheme 
                     html += `
                     <div class="sticky top-0 bg-gray-50/95 backdrop-blur-sm p-2 rounded-lg mt-4 mb-2 flex justify-between items-center text-[11px] font-bold text-gray-700 z-10 border border-gray-200 shadow-sm">
                         <div class="flex items-center text-gray-600"><span class="mr-1 text-sm">📅</span> ${dateKey}</div>
                         <div class="flex gap-2">
-                            ${day.in > 0 ? `<span class="text-green-600">รับ: +${day.in}</span>` : `<span class="text-gray-400">รับ: 0</span>`}
+                            ${day.in > 0 ? `<span class="text-teal-600">รับ: +${day.in}</span>` : `<span class="text-gray-400">รับ: 0</span>`}
                             ${day.out > 0 ? `<span class="text-red-500">จ่าย: -${day.out}</span>` : `<span class="text-gray-400">จ่าย: 0</span>`}
-                            ${day.save > 0 ? `<span class="text-blue-600">ออม: +${day.save}</span>` : `<span class="text-gray-400">ออม: 0</span>`}
+                            ${day.save > 0 ? `<span class="text-green-600">ออม: +${day.save}</span>` : `<span class="text-gray-400">ออม: 0</span>`}
                         </div>
                     </div>
                     <ul class="space-y-2.5 mb-2 relative before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">`;
@@ -852,9 +864,23 @@
                         let amt = parseFloat(item.amount);
                         let rawDate = new Date(item.timestamp);
                         let cText = item.category.replace(/Need-|Want-|Save-/g, '');
-                        let cColor = item.type === 'income' ? 'text-green-600' : (item.type === 'savings' ? 'text-blue-500' : (item.category.startsWith('Want') ? 'text-red-500' : 'text-gray-800'));
+                        
+                        // ควบคุมสีในหน้าประวัติให้ตรงกับ Color Scheme
+                        let cColor = '';
+                        let borderSideColor = '';
                         let sign = item.type === 'income' ? '+' : '-';
-                        let borderSideColor = item.type === 'income' ? 'border-l-green-400' : (item.type === 'expense' ? 'border-l-red-400' : 'border-l-blue-400');
+                        
+                        if (item.type === 'income') {
+                            cColor = 'text-teal-600'; borderSideColor = 'border-l-teal-400';
+                        } else if (item.type === 'savings') {
+                            cColor = 'text-green-600'; borderSideColor = 'border-l-green-400';
+                        } else if (item.category.startsWith('Need')) {
+                            cColor = 'text-blue-600'; borderSideColor = 'border-l-blue-400';
+                        } else if (item.category.startsWith('Want')) {
+                            cColor = 'text-red-600'; borderSideColor = 'border-l-red-400';
+                        } else {
+                            cColor = 'text-gray-600'; borderSideColor = 'border-l-gray-400';
+                        }
                         
                         html += `
                         <li class="bg-white p-3.5 rounded-xl border border-gray-100 flex flex-col shadow-sm ml-5 relative before:content-[''] before:absolute before:-left-2.5 before:top-1/2 before:w-2.5 before:h-px before:bg-gray-200 border-l-4 ${borderSideColor}">
@@ -1102,9 +1128,11 @@
             const ctx = document.getElementById('expenseChart').getContext('2d');
             if(expenseChartObj != null) expenseChartObj.destroy();
             if(needs===0 && wants===0 && savings===0) needs = 1; 
+            
+            // สีตรงกับ Color Scheme
             expenseChartObj = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels: ['จำเป็น', 'ฟุ่มเฟือย', 'ออม'], datasets: [{ data: [needs, wants, savings], backgroundColor: ['#3B82F6', '#EF4444', '#10B981'], borderWidth: 0 }] },
+                data: { labels: ['จำเป็น', 'ฟุ่มเฟือย', 'ออม'], datasets: [{ data: [needs, wants, savings], backgroundColor: ['#3B82F6', '#EF4444', '#22C55E'], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '70%' }
             });
         }
@@ -1122,14 +1150,15 @@
                 inData.push(accIn); outData.push(accOut); saveData.push(accSave);
             });
 
+            // สีตรงกับ Color Scheme
             trendChartObj = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'รายรับ', data: inData, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                        { label: 'รายจ่าย', data: outData, borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                        { label: 'เงินออม', data: saveData, borderColor: '#3B82F6', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], tension: 0.3 }
+                        { label: 'รายรับ', data: inData, borderColor: '#0D9488', backgroundColor: 'rgba(13, 148, 136, 0.1)', borderWidth: 2, fill: true, tension: 0.3 }, 
+                        { label: 'รายจ่าย', data: outData, borderColor: '#EF4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderWidth: 2, fill: true, tension: 0.3 }, 
+                        { label: 'เงินออม', data: saveData, borderColor: '#22C55E', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], tension: 0.3 } 
                     ]
                 },
                 options: {
