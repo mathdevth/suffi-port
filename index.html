@@ -13,7 +13,6 @@
         .animate-fade-in { animation: fadeIn 0.4s ease-in-out; }
         .gradient-ai { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* ซ่อน scrollbar แต่ยังเลื่อนได้ */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -86,12 +85,20 @@
 
         <!-- แท็บ 1: Dashboard (AI Insights) -->
         <div id="tab-dashboard" class="p-5 animate-fade-in">
+            
+            <!-- (ใหม่) ตัวกรองเดือน -->
+            <div class="flex justify-between items-center mb-3 animate-fade-in">
+                <h2 class="font-bold text-gray-700 text-sm">สรุปข้อมูลการเงิน</h2>
+                <select id="monthFilter" onchange="renderDashboard()" class="text-xs bg-white border border-gray-200 text-teal-700 py-1.5 px-3 rounded-lg outline-none shadow-sm font-bold focus:ring-2 focus:ring-teal-500">
+                    <option value="all">ดูทุกเดือนรวมกัน</option>
+                </select>
+            </div>
+
             <div class="gradient-ai rounded-2xl shadow-lg p-5 mb-5 text-white relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 opacity-10 text-8xl">🤖</div>
                 <h2 class="font-bold text-sm mb-3 flex items-center"><span class="text-xl mr-2">✨</span> AI Smart Insights</h2>
                 <div class="space-y-3 relative z-10">
                     
-                    <!-- กล่อง SHI -->
                     <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm relative">
                         <div class="flex justify-between items-center mb-1">
                             <p class="text-xs text-blue-100">ดัชนีสุขภาพการเงิน (SHI)</p>
@@ -149,9 +156,8 @@
                 </div>
             </div>
 
-            <!-- ประวัติล่าสุดแบบกลุ่ม -->
             <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-gray-700 text-sm">ประวัติล่าสุด (สรุปรายวัน)</h2>
+                <h2 class="font-bold text-gray-700 text-sm">ประวัติรายรับรายจ่าย</h2>
             </div>
             <div id="historyData" class="text-sm bg-gray-50 p-2 rounded-2xl border border-gray-100 h-72 overflow-y-auto no-scrollbar relative"></div>
         </div>
@@ -176,7 +182,6 @@
                 </div>
                 <div>
                     <label class="text-sm text-gray-600 font-semibold mb-1 block">จำนวนเงิน (บาท)</label>
-                    <!-- อัปเดตช่องกรอกเป็น text เพื่อใส่ลูกน้ำได้ -->
                     <input type="text" id="amount" inputmode="decimal" required placeholder="0" class="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 text-xl font-bold outline-none bg-gray-50">
                 </div>
                 <div>
@@ -189,14 +194,12 @@
 
         <!-- แท็บ 3: หน้าวางแผน -->
         <div id="tab-plan" class="hidden p-5 animate-fade-in">
-            <!-- ยอดเงินคงเหลือ -->
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-5 rounded-2xl shadow-lg mb-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 opacity-10 text-6xl transform translate-x-4 -translate-y-4">💰</div>
                 <p class="text-sm text-gray-300 font-medium">ยอดเงินคงเหลือสามารถใช้ได้</p>
                 <h2 class="text-4xl font-bold mt-1" id="currentBalance">0 <span class="text-xl font-normal">฿</span></h2>
             </div>
 
-            <!-- คำนวณงบรายวัน -->
             <h2 class="font-bold text-gray-700 text-sm mb-3 flex items-center"><span class="text-xl mr-2">📅</span> การจัดสรรงบรายวัน</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 p-4 mb-6">
                 <label class="text-sm text-gray-600 font-medium mb-2 block">จำนวนวันที่ต้องการใช้เงินก้อนนี้ให้รอด</label>
@@ -215,7 +218,6 @@
                 </div>
             </div>
 
-            <!-- ตาราง 50/30/20 -->
             <h2 class="font-bold text-gray-700 text-sm mb-3">เป้าหมายแบ่งตามยอดคงเหลือรวม (50/30/20)</h2>
             <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden mb-6">
                 <div class="flex border-b border-gray-100">
@@ -234,7 +236,6 @@
                 </div>
             </div>
 
-            <!-- ตะกร้าชะลอความอยาก -->
             <h2 class="font-bold text-gray-700 text-sm flex items-center mb-3"><span class="text-xl mr-2">🛒</span> ตะกร้าชะลอความอยาก (7 วัน)</h2>
             <div id="wishlistContainer" class="space-y-3"></div>
         </div>
@@ -266,6 +267,7 @@
         let currentUser = null; 
         window.currentBalance = 0; 
         window.leaderboardData = []; 
+        window.allMyData = []; // เก็บข้อมูลของเราทั้งหมดไว้ทำ Filter
 
         window.onload = function() {
             currentUser = localStorage.getItem('activeUser');
@@ -279,12 +281,9 @@
             }
         };
 
-        // --- ระบบจัดรูปแบบตัวเลข (ใส่คอมม่าอัตโนมัติ) ---
         const amountInput = document.getElementById('amount');
         amountInput.addEventListener('input', function(e) {
-            // เอาตัวอักษรที่ไม่ใช่ตัวเลขและจุดออก
             let val = this.value.replace(/[^0-9.]/g, '');
-            // ใส่คอมม่าคั่นหลักพัน
             if (val !== "") {
                 let parts = val.split('.');
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -294,7 +293,6 @@
             }
         });
 
-        // --- ระบบ Auth ---
         function toggleAuthScreen(screen) {
             if (screen === 'register') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -600,7 +598,7 @@
             });
         }
 
-        // --- กระดานผู้นำ (Leaderboard) ---
+        // --- กระดานผู้นำ (Leaderboard) แบบ Dense Ranking ---
         function showLeaderboard() {
             if (window.leaderboardData.length === 0) {
                 return Swal.fire('กำลังคำนวณ', 'ยังไม่มีข้อมูลผู้ใช้งานที่เพียงพอสำหรับการจัดอันดับ', 'info');
@@ -655,6 +653,7 @@
             document.getElementById('nav-' + tabName).classList.replace('text-gray-400', 'text-green-600');
         }
 
+        // --- ระบบโทนสี (Color Scheme) ---
         function setTxType(type) {
             document.getElementById('txType').value = type;
             const catSelect = document.getElementById('category');
@@ -762,6 +761,7 @@
             setTimeout(loadDashboardData, 500);
         }
 
+        // --- โหลดข้อมูล สร้าง Dropdown และเรนเดอร์ Dashboard ---
         function loadDashboardData() {
             const histDiv = document.getElementById('historyData');
             fetch(API_URL).then(res => res.json()).then(data => {
@@ -814,126 +814,190 @@
                     rankBadge.innerHTML = `🏆 รอจัดอันดับ`;
                 }
 
-                // 2. ดึงเฉพาะข้อมูลของเรามาแสดงผล
-                let myData = data.filter(item => item.user === currentUser);
-                let totalNeeds = 0, totalWants = 0, totalSavings = 0;
-                let totalIncome = 0, totalExpense = 0;
-                let dailyStats = {}; 
+                // 2. ดึงเฉพาะข้อมูลของเรา
+                window.allMyData = data.filter(item => item.user === currentUser);
 
-                if(myData.length === 0) {
+                if(window.allMyData.length === 0) {
                     histDiv.innerHTML = '<p class="text-center text-gray-400 mt-10">ยังไม่มีข้อมูล</p>';
                     document.getElementById('refreshIcon').classList.remove('animate-spin');
                     updateBudgetTable(0);
-                    checkReminderAndStreak(myData);
+                    checkReminderAndStreak(window.allMyData);
                     return;
                 }
 
-                let graphData = [...myData].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-                graphData.forEach(item => {
-                    let amt = parseFloat(item.amount);
-                    let rawDate = new Date(item.timestamp);
-                    let dateKey = rawDate.toLocaleDateString('th-TH', {day:'numeric', month:'short'});
-                    
-                    if(!dailyStats[dateKey]) dailyStats[dateKey] = { in: 0, out: 0, save: 0 };
-                    
-                    if(item.type === 'income') { totalIncome += amt; dailyStats[dateKey].in += amt; } 
-                    else if (item.type === 'expense') { 
-                        totalExpense += amt; dailyStats[dateKey].out += amt;
-                        if(item.category.startsWith('Need')) totalNeeds += amt;
-                        if(item.category.startsWith('Want')) totalWants += amt;
-                    } 
-                    else if (item.type === 'savings') { totalSavings += amt; dailyStats[dateKey].save += amt; }
-                });
-
-                let historySort = [...myData].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-                let groupedHistory = {};
-                let sortedKeys = [];
-
-                historySort.forEach(item => {
-                    let rawDate = new Date(item.timestamp);
-                    let fullDateKey = rawDate.toLocaleDateString('th-TH', {day:'numeric', month:'short', year:'numeric'});
-                    
-                    if(!groupedHistory[fullDateKey]) {
-                        groupedHistory[fullDateKey] = { items: [], in: 0, out: 0, save: 0 };
-                        sortedKeys.push(fullDateKey); 
-                    }
-                    
-                    let amt = parseFloat(item.amount);
-                    groupedHistory[fullDateKey].items.push(item);
-                    
-                    if(item.type === 'income') groupedHistory[fullDateKey].in += amt;
-                    else if(item.type === 'expense') groupedHistory[fullDateKey].out += amt;
-                    else if(item.type === 'savings') groupedHistory[fullDateKey].save += amt;
-                });
-
-                let html = '';
-                sortedKeys.forEach(dateKey => {
-                    let day = groupedHistory[dateKey];
-                    
-                    html += `
-                    <div class="sticky top-0 bg-gray-50/95 backdrop-blur-sm p-2 rounded-lg mt-4 mb-2 flex justify-between items-center text-[11px] font-bold text-gray-700 z-10 border border-gray-200 shadow-sm">
-                        <div class="flex items-center text-gray-600"><span class="mr-1 text-sm">📅</span> ${dateKey}</div>
-                        <div class="flex gap-2">
-                            ${day.in > 0 ? `<span class="text-teal-600">รับ: +${day.in.toLocaleString()}</span>` : `<span class="text-gray-400">รับ: 0</span>`}
-                            ${day.out > 0 ? `<span class="text-red-500">จ่าย: -${day.out.toLocaleString()}</span>` : `<span class="text-gray-400">จ่าย: 0</span>`}
-                            ${day.save > 0 ? `<span class="text-green-600">ออม: +${day.save.toLocaleString()}</span>` : `<span class="text-gray-400">ออม: 0</span>`}
-                        </div>
-                    </div>
-                    <ul class="space-y-2.5 mb-2 relative before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">`;
-
-                    day.items.forEach(item => {
-                        let amt = parseFloat(item.amount);
-                        let rawDate = new Date(item.timestamp);
-                        let cText = item.category.replace(/Need-|Want-|Save-/g, '');
-                        
-                        let cColor = '';
-                        let borderSideColor = '';
-                        let sign = item.type === 'income' ? '+' : '-';
-                        
-                        if (item.type === 'income') {
-                            cColor = 'text-teal-600'; borderSideColor = 'border-l-teal-400';
-                        } else if (item.type === 'savings') {
-                            cColor = 'text-green-600'; borderSideColor = 'border-l-green-400';
-                        } else if (item.category.startsWith('Need')) {
-                            cColor = 'text-blue-600'; borderSideColor = 'border-l-blue-400';
-                        } else if (item.category.startsWith('Want')) {
-                            cColor = 'text-red-600'; borderSideColor = 'border-l-red-400';
-                        } else {
-                            cColor = 'text-gray-600'; borderSideColor = 'border-l-gray-400';
-                        }
-                        
-                        html += `
-                        <li class="bg-white p-3.5 rounded-xl border border-gray-100 flex flex-col shadow-sm ml-5 relative before:content-[''] before:absolute before:-left-2.5 before:top-1/2 before:w-2.5 before:h-px before:bg-gray-200 border-l-4 ${borderSideColor}">
-                            <div class="flex justify-between items-start mb-2">
-                                <div><p class="font-bold text-sm text-gray-700">${cText}</p><p class="text-xs text-gray-400">${item.note}</p></div>
-                                <div class="${cColor} font-bold text-base text-right">${sign}${amt.toLocaleString()} ฿</div>
-                            </div>
-                            <div class="flex justify-end space-x-4 pt-2.5 border-t border-gray-50">
-                                <button onclick="editRecord(${item.rowId}, '${rawDate.toISOString()}', ${amt}, '${item.note}')" class="text-xs text-blue-500 hover:text-blue-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                <button onclick="deleteRecord(${item.rowId})" class="text-xs text-red-500 hover:text-red-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                            </div>
-                        </li>`;
-                    });
-                    
-                    html += `</ul>`;
+                // 3. สร้างตัวเลือกเดือนใน Dropdown
+                let monthSet = new Set();
+                window.allMyData.forEach(item => {
+                    let d = new Date(item.timestamp);
+                    let mKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+                    monthSet.add(mKey);
                 });
                 
-                histDiv.innerHTML = html;
+                let monthArr = Array.from(monthSet).sort().reverse(); 
+                let filterSelect = document.getElementById('monthFilter');
+                let currentFilter = filterSelect.value; 
+                
+                let optionsHtml = '<option value="all">ดูทุกเดือนรวมกัน</option>';
+                const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                monthArr.forEach(mKey => {
+                    let [yy, mm] = mKey.split('-');
+                    let thMonth = thaiMonths[parseInt(mm) - 1];
+                    let thYear = parseInt(yy) + 543;
+                    optionsHtml += `<option value="${mKey}">${thMonth} ${thYear}</option>`;
+                });
+                filterSelect.innerHTML = optionsHtml;
+                
+                if (currentFilter !== 'all' && monthArr.includes(currentFilter)) {
+                    filterSelect.value = currentFilter;
+                } else {
+                    filterSelect.value = 'all'; 
+                }
+
+                // 4. เรนเดอร์หน้าจอ
+                renderDashboard();
+                checkReminderAndStreak(window.allMyData);
                 document.getElementById('refreshIcon').classList.remove('animate-spin');
-
-                let balance = totalIncome - totalExpense - totalSavings;
-                
-                calculateAI_Insights(dailyStats, totalIncome, totalExpense, totalSavings, totalNeeds, totalWants, balance);
-                updateExpensePie(totalNeeds, totalWants, totalSavings);
-                updateTrendLine(dailyStats);
-                updateBudgetTable(balance);
-                
-                checkReminderAndStreak(myData);
 
             }).catch(e => {
                 histDiv.innerHTML = '<p class="text-center text-red-500 mt-10">เชื่อมต่อล้มเหลว</p>';
                 document.getElementById('refreshIcon').classList.remove('animate-spin');
             });
+        }
+
+        // --- ฟังก์ชันอัปเดตหน้าจอตามเดือนที่เลือก ---
+        function renderDashboard() {
+            let filterValue = document.getElementById('monthFilter').value;
+            let displayData = window.allMyData;
+            
+            if (filterValue !== 'all') {
+                displayData = window.allMyData.filter(item => {
+                    let d = new Date(item.timestamp);
+                    let mKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+                    return mKey === filterValue;
+                });
+            }
+
+            const histDiv = document.getElementById('historyData');
+            
+            // ยอดเงินคงเหลือจะคำนวณจากทุกเดือนเสมอ เพื่อความสมจริงในการวางแผน
+            let globalIncome = 0, globalExpense = 0, globalSavings = 0;
+            window.allMyData.forEach(i => {
+                let a = parseFloat(i.amount);
+                if(i.type === 'income') globalIncome += a;
+                if(i.type === 'expense') globalExpense += a;
+                if(i.type === 'savings') globalSavings += a;
+            });
+            let globalBalance = globalIncome - globalExpense - globalSavings;
+
+            if (displayData.length === 0) {
+                histDiv.innerHTML = '<p class="text-center text-gray-400 mt-10">ไม่มีข้อมูลในเดือนนี้</p>';
+                calculateAI_Insights({}, 0, 0, 0, 0, 0, globalBalance);
+                updateExpensePie(0, 0, 0);
+                updateTrendLine({});
+                updateBudgetTable(globalBalance);
+                return;
+            }
+
+            let totalNeeds = 0, totalWants = 0, totalSavings = 0;
+            let totalIncome = 0, totalExpense = 0;
+            let dailyStats = {}; 
+
+            let graphData = [...displayData].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+            graphData.forEach(item => {
+                let amt = parseFloat(item.amount);
+                let rawDate = new Date(item.timestamp);
+                let dateKey = rawDate.toLocaleDateString('th-TH', {day:'numeric', month:'short'});
+                
+                if(!dailyStats[dateKey]) dailyStats[dateKey] = { in: 0, out: 0, save: 0 };
+                
+                if(item.type === 'income') { totalIncome += amt; dailyStats[dateKey].in += amt; } 
+                else if (item.type === 'expense') { 
+                    totalExpense += amt; dailyStats[dateKey].out += amt;
+                    if(item.category.startsWith('Need')) totalNeeds += amt;
+                    if(item.category.startsWith('Want')) totalWants += amt;
+                } 
+                else if (item.type === 'savings') { totalSavings += amt; dailyStats[dateKey].save += amt; }
+            });
+
+            let historySort = [...displayData].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            let groupedHistory = {};
+            let sortedKeys = [];
+
+            historySort.forEach(item => {
+                let rawDate = new Date(item.timestamp);
+                let fullDateKey = rawDate.toLocaleDateString('th-TH', {day:'numeric', month:'short', year:'numeric'});
+                
+                if(!groupedHistory[fullDateKey]) {
+                    groupedHistory[fullDateKey] = { items: [], in: 0, out: 0, save: 0 };
+                    sortedKeys.push(fullDateKey); 
+                }
+                
+                let amt = parseFloat(item.amount);
+                groupedHistory[fullDateKey].items.push(item);
+                
+                if(item.type === 'income') groupedHistory[fullDateKey].in += amt;
+                else if(item.type === 'expense') groupedHistory[fullDateKey].out += amt;
+                else if(item.type === 'savings') groupedHistory[fullDateKey].save += amt;
+            });
+
+            let html = '';
+            sortedKeys.forEach(dateKey => {
+                let day = groupedHistory[dateKey];
+                
+                html += `
+                <div class="sticky top-0 bg-gray-50/95 backdrop-blur-sm p-2 rounded-lg mt-4 mb-2 flex justify-between items-center text-[11px] font-bold text-gray-700 z-10 border border-gray-200 shadow-sm">
+                    <div class="flex items-center text-gray-600"><span class="mr-1 text-sm">📅</span> ${dateKey}</div>
+                    <div class="flex gap-2">
+                        ${day.in > 0 ? `<span class="text-teal-600">รับ: +${day.in.toLocaleString()}</span>` : `<span class="text-gray-400">รับ: 0</span>`}
+                        ${day.out > 0 ? `<span class="text-red-500">จ่าย: -${day.out.toLocaleString()}</span>` : `<span class="text-gray-400">จ่าย: 0</span>`}
+                        ${day.save > 0 ? `<span class="text-green-600">ออม: +${day.save.toLocaleString()}</span>` : `<span class="text-gray-400">ออม: 0</span>`}
+                    </div>
+                </div>
+                <ul class="space-y-2.5 mb-2 relative before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-0 before:w-0.5 before:bg-gray-100">`;
+
+                day.items.forEach(item => {
+                    let amt = parseFloat(item.amount);
+                    let rawDate = new Date(item.timestamp);
+                    let cText = item.category.replace(/Need-|Want-|Save-/g, '');
+                    
+                    let cColor = '';
+                    let borderSideColor = '';
+                    let sign = item.type === 'income' ? '+' : '-';
+                    
+                    if (item.type === 'income') {
+                        cColor = 'text-teal-600'; borderSideColor = 'border-l-teal-400';
+                    } else if (item.type === 'savings') {
+                        cColor = 'text-green-600'; borderSideColor = 'border-l-green-400';
+                    } else if (item.category.startsWith('Need')) {
+                        cColor = 'text-blue-600'; borderSideColor = 'border-l-blue-400';
+                    } else if (item.category.startsWith('Want')) {
+                        cColor = 'text-red-600'; borderSideColor = 'border-l-red-400';
+                    } else {
+                        cColor = 'text-gray-600'; borderSideColor = 'border-l-gray-400';
+                    }
+                    
+                    html += `
+                    <li class="bg-white p-3.5 rounded-xl border border-gray-100 flex flex-col shadow-sm ml-5 relative before:content-[''] before:absolute before:-left-2.5 before:top-1/2 before:w-2.5 before:h-px before:bg-gray-200 border-l-4 ${borderSideColor}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div><p class="font-bold text-sm text-gray-700">${cText}</p><p class="text-xs text-gray-400">${item.note}</p></div>
+                            <div class="${cColor} font-bold text-base text-right">${sign}${amt.toLocaleString()} ฿</div>
+                        </div>
+                        <div class="flex justify-end space-x-4 pt-2.5 border-t border-gray-50">
+                            <button onclick="editRecord(${item.rowId}, '${rawDate.toISOString()}', ${amt}, '${item.note}')" class="text-xs text-blue-500 hover:text-blue-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                            <button onclick="deleteRecord(${item.rowId})" class="text-xs text-red-500 hover:text-red-700 flex items-center"><svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        </div>
+                    </li>`;
+                });
+                
+                html += `</ul>`;
+            });
+            
+            histDiv.innerHTML = html;
+
+            calculateAI_Insights(dailyStats, totalIncome, totalExpense, totalSavings, totalNeeds, totalWants, globalBalance);
+            updateExpensePie(totalNeeds, totalWants, totalSavings);
+            updateTrendLine(dailyStats);
+            updateBudgetTable(globalBalance);
         }
 
         // --- ระบบแจ้งเตือนกันลืม + สถิติต่อเนื่อง ---
@@ -1032,7 +1096,7 @@
 
             if (balance > 0 && avgOut > 0) {
                 let daysLeft = (balance / avgOut).toFixed(1);
-                document.getElementById('aiBurnRate').innerHTML = `<span class="text-xl font-bold">${daysLeft}</span> วัน`;
+                document.getElementById('aiBurnRate').innerHTML = `<span class="text-xl font-bold">${daysLeft.toLocaleString()}</span> วัน`;
             } else if (balance <= 0) {
                 document.getElementById('aiBurnRate').innerHTML = `<span class="text-red-300">เงินหมดแล้ว!</span>`;
             } else {
@@ -1041,7 +1105,7 @@
 
             if (avgOut > avgIn && balance > 0) {
                 let intersectDays = (balance / (avgOut - avgIn)).toFixed(0);
-                document.getElementById('aiIntersect').innerHTML = `ติดลบใน <span class="text-red-300 text-xl font-bold">${intersectDays}</span> วัน`;
+                document.getElementById('aiIntersect').innerHTML = `ติดลบใน <span class="text-red-300 text-xl font-bold">${intersectDays.toLocaleString()}</span> วัน`;
             } else {
                 document.getElementById('aiIntersect').innerHTML = `<span class="text-green-300">ไม่มีแนวโน้มติดลบ ✅</span>`;
             }
