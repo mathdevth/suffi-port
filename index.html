@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suffi-Port: พอ-ดี-พอร์ต (AI Finance)</title>
+    <title>พอเพียงพอร์ท (Suffi-Port) - AI Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -23,7 +23,7 @@
     <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-700 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner"><span class="text-4xl">🌱</span></div>
-            <h2 class="text-3xl font-bold mb-1 text-green-700">พอ-ดี-พอร์ต</h2>
+            <h2 class="text-3xl font-bold mb-1 text-green-700">พอเพียงพอร์ท</h2>
             <p class="text-gray-500 mb-6 text-sm">เข้าสู่ระบบเพื่อจัดการเงินของคุณ</p>
             
             <input type="text" id="loginName" placeholder="ชื่อผู้ใช้งาน" class="w-full p-4 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-green-500 outline-none text-center font-semibold text-lg">
@@ -60,7 +60,7 @@
         <!-- Header -->
         <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-5 rounded-b-3xl shadow-md flex justify-between items-start">
             <div>
-                <h1 class="text-xl font-bold tracking-wide mt-1">พอ-ดี-พอร์ต</h1>
+                <h1 class="text-xl font-bold tracking-wide mt-1">พอเพียงพอร์ท</h1>
                 <div class="flex items-center mt-1">
                     <p class="text-xs text-green-100" id="displayUser">ผู้ใช้งาน: ...</p>
                     <button onclick="openChangeUsernameModal()" class="ml-1 text-green-200 hover:text-white transition" title="แก้ไขชื่อไอดี">
@@ -86,13 +86,17 @@
         <!-- แท็บ 1: Dashboard (AI Insights) -->
         <div id="tab-dashboard" class="p-5 animate-fade-in">
             
-            <!-- (ใหม่) ตัวกรองเดือน -->
             <div class="flex justify-between items-center mb-3 animate-fade-in">
                 <h2 class="font-bold text-gray-700 text-sm">สรุปข้อมูลการเงิน</h2>
                 <select id="monthFilter" onchange="renderDashboard()" class="text-xs bg-white border border-gray-200 text-teal-700 py-1.5 px-3 rounded-lg outline-none shadow-sm font-bold focus:ring-2 focus:ring-teal-500">
                     <option value="all">ดูทุกเดือนรวมกัน</option>
                 </select>
             </div>
+
+            <!-- (ใหม่) ปุ่มสแกนความคุ้มค่าด่วน (Pre-Purchase Check) ตอบโจทย์กรรมการ -->
+            <button onclick="quickScanCost()" class="w-full bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg mb-5 transform transition hover:scale-[1.02] flex items-center justify-center border-2 border-white">
+                <span class="text-2xl mr-2">🔍</span> สแกนความคุ้มค่าด่วน! (ก่อนตัดสินใจโอน)
+            </button>
 
             <div class="gradient-ai rounded-2xl shadow-lg p-5 mb-5 text-white relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 opacity-10 text-8xl">🤖</div>
@@ -267,7 +271,7 @@
         let currentUser = null; 
         window.currentBalance = 0; 
         window.leaderboardData = []; 
-        window.allMyData = []; // เก็บข้อมูลของเราทั้งหมดไว้ทำ Filter
+        window.allMyData = []; 
 
         window.onload = function() {
             currentUser = localStorage.getItem('activeUser');
@@ -293,6 +297,7 @@
             }
         });
 
+        // --- ระบบ Auth ---
         function toggleAuthScreen(screen) {
             if (screen === 'register') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -439,7 +444,7 @@
                 html: `
                     <div class="text-left text-sm space-y-4 text-gray-700 mt-2">
                         <div class="text-center">
-                            <h3 class="font-bold text-green-700 text-base mb-1">แอปพลิเคชัน “พอ-ดี-พอร์ต (Suffi-Port)”</h3>
+                            <h3 class="font-bold text-green-700 text-base mb-1">แอปพลิเคชัน “พอเพียงพอร์ท”</h3>
                             <p class="text-xs text-gray-600">โมเดลสมการเชิงเส้นและอสมการ<br>เพื่อสร้างดัชนีภูมิคุ้มกันทางการเงินตามหลักเศรษฐกิจพอเพียง</p>
                         </div>
                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
@@ -460,7 +465,6 @@
                         <div class="text-center text-xs text-gray-500 mt-4 border-t border-gray-100 pt-3">
                             <p class="font-bold text-gray-700">🏫 โรงเรียนวังโพรงพิทยาคม</p>
                             <p>สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาพิษณุโลก อุตรดิตถ์</p>
-                            <p class="mt-1 text-[10px]">ระยะเวลาทำโครงงาน: 24 มิ.ย. – 3 ส.ค. 2569 (ภาคเรียนที่ 1/2569)</p>
                         </div>
                     </div>
                 `,
@@ -496,42 +500,10 @@
                         </div>
 
                         <ul class="list-disc pl-5 space-y-2 text-xs mt-3">
-                            <li>
-                                <b><span class="text-green-600">
-                                    <span class="inline-flex flex-col items-center align-middle mx-0.5 text-[10px] transform -translate-y-0.5">
-                                        <span class="border-b-[1.5px] border-green-600 px-0.5 leading-none pb-px">S</span>
-                                        <span class="leading-none pt-px">I</span>
-                                    </span>
-                                    (Savings):
-                                </span></b> สัดส่วนเงินออม ยิ่งออมมากยิ่งบวกเพิ่ม
-                            </li>
-                            <li>
-                                <b><span class="text-red-600">
-                                    <span class="inline-flex flex-col items-center align-middle mx-0.5 text-[10px] transform -translate-y-0.5">
-                                        <span class="border-b-[1.5px] border-red-600 px-0.5 leading-none pb-px">W</span>
-                                        <span class="leading-none pt-px">I</span>
-                                    </span>
-                                    (Wants):
-                                </span></b> สัดส่วนของฟุ่มเฟือย ยิ่งใช้มากยิ่งโดนหัก
-                            </li>
-                            <li>
-                                <b><span class="text-blue-600">
-                                    <span class="inline-flex flex-col items-center align-middle mx-0.5 text-[10px] transform -translate-y-0.5">
-                                        <span class="border-b-[1.5px] border-blue-600 px-0.5 leading-none pb-px">N</span>
-                                        <span class="leading-none pt-px">I</span>
-                                    </span>
-                                    (Needs):
-                                </span></b> สัดส่วนของจำเป็น หากรักษาสมดุลใกล้เคียง 50% จะได้โบนัสคะแนนเพิ่ม
-                            </li>
+                            <li><b>S (Savings):</b> สัดส่วนเงินออม ยิ่งออมมากยิ่งบวกเพิ่ม</li>
+                            <li><b>W (Wants):</b> สัดส่วนของฟุ่มเฟือย ยิ่งใช้มากยิ่งโดนหัก</li>
+                            <li><b>N (Needs):</b> สัดส่วนของจำเป็น หากรักษาสมดุลใกล้เคียง 50% จะได้โบนัสคะแนนเพิ่ม</li>
                         </ul>
-                        <hr class="my-3 border-gray-200">
-                        <p class="font-bold text-center mb-2">เกณฑ์ระดับคะแนน:</p>
-                        <div class="grid grid-cols-2 gap-2 text-center text-xs font-bold">
-                            <div class="bg-green-100 text-green-700 p-2 rounded-lg">🌟 80 - 100<br>ยอดเยี่ยม</div>
-                            <div class="bg-blue-100 text-blue-700 p-2 rounded-lg">🟢 60 - 79<br>ดีมาก</div>
-                            <div class="bg-yellow-100 text-yellow-700 p-2 rounded-lg">🟡 40 - 59<br>พอใช้</div>
-                            <div class="bg-red-100 text-red-700 p-2 rounded-lg">🔴 0 - 39<br>ต้องปรับปรุง</div>
-                        </div>
                     </div>
                 `,
                 icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
@@ -548,18 +520,16 @@
                         <div class="bg-gray-100 py-4 px-2 rounded-lg flex items-center justify-center text-blue-600 font-bold text-base shadow-inner border border-gray-200">
                             <span>x = </span>
                             <div class="inline-flex flex-col items-center mx-2 align-middle text-sm transform -translate-y-0.5">
-                                <span class="border-b-2 border-blue-600 px-2 leading-none pb-1">c</span>
-                                <span class="px-2 leading-none pt-1">m</span>
+                                <span class="border-b-2 border-blue-600 px-2 leading-none pb-1">C</span>
+                                <span class="px-2 leading-none pt-1">M</span>
                             </div>
                         </div>
 
                         <ul class="list-disc pl-5 space-y-1 mt-2">
                             <li><b>x (จำนวนวัน):</b> เวลาที่คาดว่าเงินจะหมด</li>
-                            <li><b>c (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
-                            <li><b>m (ค่าเฉลี่ยการจ่าย):</b> อัตราการใช้จ่ายเฉลี่ยต่อวัน (ความชัน)</li>
+                            <li><b>C (ยอดเงินคงเหลือ):</b> ยอดเงินที่สามารถใช้ได้ในปัจจุบัน</li>
+                            <li><b>M (ค่าเฉลี่ยการจ่าย):</b> อัตราการใช้จ่ายเฉลี่ยต่อวัน (ความชัน)</li>
                         </ul>
-                        <hr class="my-2 border-gray-200">
-                        <p class="text-xs text-gray-500"><b>คำแนะนำ:</b> หากตัวเลขจำนวนวัน (x) น้อยเกินไป คุณควรลดรายจ่ายในหมวด "ฟุ่มเฟือย" เพื่อลดความชัน (m) ทำให้ยืดระยะเวลาให้อยู่รอดได้นานขึ้น!</p>
                     </div>
                 `,
                 icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
@@ -576,25 +546,64 @@
                         <div class="bg-gray-100 py-3 px-2 rounded-lg flex flex-col items-center justify-center text-blue-600 font-bold text-sm shadow-inner border border-gray-200 space-y-1.5">
                             <div>y₁ = m₁x + c₁ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายรับ)</span></div>
                             <div>y₂ = m₂x + c₂ <span class="text-gray-400 font-normal text-xs ml-1">(สมการรายจ่าย)</span></div>
-                            <div class="w-3/4 border-t border-blue-200 my-1"></div>
-                            <div class="flex items-center text-gray-700 text-xs">หาจุดตัด (y₁ = y₂) จะได้ค่า x (วัน) คือ:</div>
-                            <div class="flex items-center text-base mt-1">
-                                <span>x = </span>
-                                <div class="inline-flex flex-col items-center mx-2 align-middle text-sm transform -translate-y-0.5">
-                                    <span class="border-b-2 border-blue-600 px-2 leading-none pb-1">c₂ - c₁</span>
-                                    <span class="px-2 leading-none pt-1">m₁ - m₂</span>
-                                </div>
-                            </div>
                         </div>
-
-                        <ul class="list-disc pl-5 space-y-1 mt-2 text-xs">
-                            <li><b>m₁, m₂:</b> อัตราการเปลี่ยนแปลง (ความชัน) ของรายรับและรายจ่ายเฉลี่ยต่อวัน</li>
-                            <li><b>c₁, c₂:</b> ยอดเงินตั้งต้น (จุดตัดแกน Y)</li>
-                        </ul>
-                        <p class="text-xs text-gray-500 mt-2"><b>ความหมาย:</b> หากระบบแจ้งเตือนว่ากำลังจะติดลบในไม่กี่วัน แสดงว่าความชัน (Slope) ของเส้นรายจ่ายของคุณสูงกว่ารายรับ ควรงดการสร้างรายจ่ายใหม่ทันที!</p>
                     </div>
                 `,
                 icon: 'info', confirmButtonText: 'เข้าใจแล้ว', confirmButtonColor: '#3b82f6'
+            });
+        }
+
+        // --- (ใหม่) ฟังก์ชันสแกนความคุ้มค่าด่วน (Pre-Purchase Check) ---
+        function quickScanCost() {
+            Swal.fire({
+                title: 'สแกนความคุ้มค่าด่วน! 🔍',
+                text: 'เจอของที่อยากได้ใช่ไหม? พิมพ์ราคาของชิ้นนั้นลงมาเลย',
+                input: 'number',
+                inputPlaceholder: 'ราคาสินค้า (บาท)',
+                showCancelButton: true,
+                confirmButtonText: 'คำนวณเลย!',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#F59E0B',
+                inputValidator: (value) => {
+                    if (!value || value <= 0) return 'กรุณาระบุราคาให้ถูกต้อง!'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let price = parseFloat(result.value);
+                    let meals = (price / 40).toFixed(1); 
+                    
+                    Swal.fire({
+                        title: 'คิดให้ดีนะ! ⚠️',
+                        html: `ของราคา <b>${price.toLocaleString()} บาท</b> ชิ้นนี้<br>มีมูลค่าเทียบเท่ากับ <b>ข้าวกลางวันถึง <span class="text-red-500 text-2xl font-bold">${meals}</span> มื้อ!</b><br><br>แน่ใจนะว่าอยากได้จริงๆ? เอาไปพักไว้ในตะกร้า 7 วันก่อนไหม?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonText: '🛒 ใส่ตะกร้ารอก่อน',
+                        denyButtonText: 'เปลี่ยนใจ ไม่เอาแล้ว ❌',
+                        cancelButtonText: 'ยกเลิก',
+                        confirmButtonColor: '#10B981',
+                        denyButtonColor: '#6B7280'
+                    }).then((action) => {
+                        if (action.isConfirmed) {
+                            Swal.fire({
+                                title: 'ตั้งชื่อของที่อยากได้',
+                                input: 'text',
+                                inputPlaceholder: 'เช่น สกินเกม, เสื้อผ้า',
+                                showCancelButton: true,
+                                confirmButtonText: 'เก็บลงตะกร้า',
+                                confirmButtonColor: '#10B981',
+                                inputValidator: (value) => {
+                                    if (!value) return 'กรุณาตั้งชื่อของที่อยากได้!'
+                                }
+                            }).then((nameResult) => {
+                                if(nameResult.isConfirmed) {
+                                    addToWishlist(nameResult.value, price);
+                                    showTab('plan'); 
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
 
@@ -688,6 +697,7 @@
             }
         }
 
+        // --- (อัปเดตใหม่) ระบบบันทึกข้อมูล + หน้าต่างสำนึกผิด (Guilt-Trip Reflection) ---
         document.getElementById('recordForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const txDate = document.getElementById('txDate').value;
@@ -699,17 +709,44 @@
             const amount = parseFloat(amountRaw);
             const note = document.getElementById('note').value || category.replace(/Need-|Want-|Save-/g, '');
 
+            // หากเป็นรายจ่ายฟุ่มเฟือย จะเข้าสู่กระบวนการสอบสวน
             if(type === 'expense' && category.startsWith("Want")) {
                 Swal.fire({
-                    title: 'ระวังอารมณ์ชั่ววูบ!',
-                    html: `เงิน <b>${amount.toLocaleString()} ฿</b> นี้นำไปใส่ <b>ตะกร้าชะลอความอยาก</b> เพื่อทบทวน 7 วันก่อนดีไหม?`,
-                    icon: 'warning', showCancelButton: true, confirmButtonColor: '#F59E0B', cancelButtonColor: '#EF4444', 
-                    confirmButtonText: '🛒 ใส่ตะกร้ารอก่อน', cancelButtonText: 'ซื้อเลย (หักเงิน)'
+                    title: 'สารภาพมาซะดีๆ! 👀',
+                    text: `คุณได้จ่ายเงิน ${amount.toLocaleString()} บาท ซื้อของชิ้นนี้ไปหรือยัง?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonColor: '#10B981', 
+                    denyButtonColor: '#EF4444', 
+                    cancelButtonColor: '#6B7280', 
+                    confirmButtonText: 'ยัง! ขอใส่ตะกร้ารอก่อน 🛒',
+                    denyButtonText: 'ซื้อไปแล้ว... (สารภาพผิด) 💸',
+                    cancelButtonText: 'ยกเลิก',
+                    reverseButtons: true
                 }).then((result) => {
-                    if (result.isConfirmed) { addToWishlist(note, amount); } 
-                    else if (result.dismiss === Swal.DismissReason.cancel) { processApiAction({ action: 'add', date: txDate, type, category, amount, note, user: currentUser }, 'กำลังบันทึก...'); }
-                })
+                    if (result.isConfirmed) {
+                        // ตอบว่ายังไม่ได้ซื้อ -> ปลอดภัย นำเข้าตะกร้าชะลอความอยาก
+                        addToWishlist(note, amount);
+                        document.getElementById('recordForm').reset();
+                        document.getElementById('amount').value = '';
+                    } else if (result.isDenied) {
+                        // ตอบว่าซื้อไปแล้ว -> หน้าต่างสำนึกผิด (Guilt-Trip)
+                        Swal.fire({
+                            title: 'พ่ายแพ้ต่ออารมณ์ชั่ววูบ! 📉',
+                            html: `เงิน <b>${amount.toLocaleString()} บาท</b> กระเด็นออกจากกระเป๋าไปแล้ว!<br><br><b>บทลงโทษ:</b> ระบบจะบันทึกรายจ่ายนี้และจะมีผลทำให้ <b>คะแนน SHI ของคุณลดลง</b> เนื่องจากลัดขั้นตอนไม่ผ่านตะกร้าชะลอความอยาก!<br><br><span class="text-sm text-gray-500">คราวหน้าอย่าลืมใช้ตะกร้าเพื่อหน่วงเวลา 7 วันนะ</span>`,
+                            icon: 'error',
+                            confirmButtonText: 'ยอมรับผลกรรม',
+                            confirmButtonColor: '#EF4444'
+                        }).then(() => {
+                            // บันทึกลงฐานข้อมูลพร้อมประจานในหมายเหตุว่าโดนหักคะแนน
+                            let finalNote = note + " (แอบซื้อลัดขั้นตอน)";
+                            processApiAction({ action: 'add', date: txDate, type, category, amount, note: finalNote, user: currentUser }, 'กำลังบันทึกและหักคะแนน...');
+                        });
+                    }
+                });
             } else {
+                // บันทึกรายการปกติ (รับ, ออม, จำเป็น)
                 processApiAction({ action: 'add', date: txDate, type, category, amount, note, user: currentUser }, 'กำลังบันทึก...');
             }
         });
@@ -750,7 +787,7 @@
                 Swal.fire('สำเร็จ!', 'อัปเดตข้อมูลเรียบร้อย', 'success');
                 if(payload.action === 'add') {
                     document.getElementById('recordForm').reset();
-                    document.getElementById('amount').value = ''; // เคลียร์ช่องให้เกลี้ยง
+                    document.getElementById('amount').value = ''; 
                 }
                 loadDashboardData(); 
             }).catch(error => Swal.fire('ผิดพลาด', 'เชื่อมต่อขัดข้อง', 'error'));
